@@ -4,10 +4,10 @@ This document outlines a high-level, three-piece architecture and the responsibi
 
 ## 1) Emacs UI (ELisp)
 - Responsibilities: Editor UX, keybindings, command palette, context capture (region/buffer/file/project), status/progress display, diff review, approval flow, and applying accepted patches to buffers/files.
-- Process Lifecycle: Spawn/monitor Codex CLI as a long-lived subprocess; handle version handshake and graceful restarts.
+- Process Lifecycle: Spawn/monitor codex-rpc as a long-lived subprocess; handle version handshake and graceful restarts.
 - Configuration: Surface project/global settings (model, presets, ignores) and quick toggles; store lightweight UI preferences.
 
-## 2) Codex CLI Core (Stdio RPC)
+## 2) RPC CLI Core (codex-rpc, Stdio RPC)
 - Responsibilities: Session orchestration, prompt assembly, context building (search, globs, .gitignore), provider calls (streaming), token/rate tracking, diff/patch generation, and safety checks.
 - Tools & Feedback: Run tests/linters/build commands; capture errors and feed them back into prompts.
 - Persistence: Manage session transcripts, caches, and configuration resolution (global → project) without writing source files directly.
@@ -21,5 +21,6 @@ This document outlines a high-level, three-piece architecture and the responsibi
 ---
 
 Notes
-- v1 targets Emacs UI + Codex CLI over stdio; no network server required.
+- Naming: `codex` refers to the external OpenAI CLI (not this project); `codex-rpc` is our RPC/CLI binary used by Emacs and for one-shots.
+- v1 targets Emacs UI + codex-rpc over stdio; no network server required.
 - CLI proposes patches; Emacs applies edits after user approval (dry-run by default, allowlist paths, size/file caps).
