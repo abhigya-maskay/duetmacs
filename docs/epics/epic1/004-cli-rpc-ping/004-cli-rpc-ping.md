@@ -1,6 +1,6 @@
 # Story 004: CLI RPC Ping
 
-As a CLI user, I want `codex-rpc rpc --ping` to perform a minimal RPC handshake and return a success response so that Emacs and scripts can verify connectivity.
+As a CLI user, I want `duet-rpc rpc --ping` to perform a minimal RPC handshake and return a success response so that Emacs and scripts can verify connectivity.
 
 ## Priority
 - Must
@@ -18,9 +18,9 @@ As a CLI user, I want `codex-rpc rpc --ping` to perform a minimal RPC handshake 
 - Establishes a reliable, scriptable connectivity check used by Emacs health and CI smoke tests.
 
 ## Acceptance Criteria (Given/When/Then)
-- Given the binary is installed, When I run `codex-rpc rpc --ping`, Then it returns exit code 0 and prints `pong` (with trailing newline) to stdout.
-- Given the `--json` flag, When I run `codex-rpc rpc --ping --json`, Then it prints minimal JSON to stdout including `status: "ok"`, `version`, and an ISO-8601 UTC `timestamp`, and exits 0.
-- Given a `--timeout <ms>` flag, When I run `codex-rpc rpc --ping --timeout 500`, Then the command respects the timeout and returns exit code 124 with the message `timeout exceeded after 500 ms` written to stderr; with `--json`, it instead outputs a JSON error object `{ "status": "error", "message": "timeout exceeded after 500 ms" }`.
+- Given the binary is installed, When I run `duet-rpc rpc --ping`, Then it returns exit code 0 and prints `pong` (with trailing newline) to stdout.
+- Given the `--json` flag, When I run `duet-rpc rpc --ping --json`, Then it prints minimal JSON to stdout including `status: "ok"`, `version`, and an ISO-8601 UTC `timestamp`, and exits 0.
+- Given a `--timeout <ms>` flag, When I run `duet-rpc rpc --ping --timeout 500`, Then the command respects the timeout and returns exit code 124 with the message `timeout exceeded after 500 ms` written to stderr; with `--json`, it instead outputs a JSON error object `{ "status": "error", "message": "timeout exceeded after 500 ms" }`.
 - Given other errors (e.g., handshake/transport failure), When the command fails, Then it exits non-zero (e.g., 1) and prints a concise error to stderr; with `--json`, it prints `{ "status": "error", "message": "<cause>" }`.
 - Given unexpected flags or input, When the command is invoked incorrectly, Then it prints helpful usage to stderr and exits non-zero.
 

@@ -3,21 +3,21 @@
 This document defines vertical-slice epics so that each delivers a testable, end-to-end feature via both Emacs UI and an equivalent CLI one-shot. Each epic lists goal, scope (split UI/CLI), dependencies, acceptance (must be verifiable from UI and CLI), and phase.
 
 Note on naming
-- codex: External OpenAI CLI tool (not this project).
-- codex-rpc: Our RPC/CLI binary used by Emacs and for one-shots.
+- Claude Code: Anthropic's CLI tool.
+- duet-rpc: Our RPC/CLI binary used by Emacs and for one-shots.
 
 ## Epic: Project Bootstrap (CLI + Emacs Plugin)
-- Goal: Establish working skeletons for codex-rpc (our CLI) and the Emacs package with tooling, packaging, CI, and a minimal RPC handshake so both can run end-to-end in a no-op mode.
-- UI Scope: Emacs package scaffolding (package metadata, init, keymap, command palette entry, config variables); subprocess management to launch CLI; version/health commands; basic minibuffer status; `*Codex RPC*` control buffer (opens on start, shows status/PID); `*Codex Logs*` append-only log buffer (does not auto-open); transient-style `codex-dispatch` menu (Start/Stop with confirm, Health/Version, Locate CLI/Customize, Open Logs/Refresh); install/build instructions.
-- CLI Scope: CLI project scaffolding (binary: `codex-rpc`; language toolchain; entrypoint; subcommands: `version`, `doctor`, `rpc --ping`, `prompt --dry-run`); logging; config loading precedence; packaging/release scripts.
+- Goal: Establish working skeletons for duet-rpc (our CLI) and the Emacs package with tooling, packaging, CI, and a minimal RPC handshake so both can run end-to-end in a no-op mode.
+- UI Scope: Emacs package scaffolding (package metadata, init, keymap, command palette entry, config variables); subprocess management to launch CLI; version/health commands; basic minibuffer status; `*DUET RPC*` control buffer (opens on start, shows status/PID); `*DUET Logs*` append-only log buffer (does not auto-open); transient-style `duet-dispatch` menu (Start/Stop with confirm, Health/Version, Locate CLI/Customize, Open Logs/Refresh); install/build instructions.
+- CLI Scope: CLI project scaffolding (binary: `duet-rpc`; language toolchain; entrypoint; subcommands: `version`, `doctor`, `rpc --ping`, `prompt --dry-run`); logging; config loading precedence; packaging/release scripts.
 - Dependencies: None.
 - Acceptance:
-  - CLI: `codex-rpc --version` prints version; `codex-rpc doctor` checks env and prints a human-readable checklist, emits stable JSON with `--json`, respects `NO_COLOR`/non-TTY, and uses exit codes 0/1/2; `codex-rpc rpc --ping` responds with `pong` (text) or minimal JSON with `--json`, supports `--timeout <ms>` with exit code 124 on timeout; `codex-rpc prompt --file <f> --dry-run` returns a no-op response with a labeled block in text mode and, with `--json`, emits fields `mode`, `file`, `size_bytes`, `sha256`, `received_at`; accepts but ignores provider/model flags with warnings; usage errors exit 2 with a help hint; file I/O errors exit 3.
-    - Help behavior: synopsis `codex-rpc [COMMAND] [OPTIONS]`; footer `See 'codex-rpc <command> --help' for more information.`; colorized when TTY and honoring `NO_COLOR`; plain when piped; output is newline-terminated.
+  - CLI: `duet-rpc --version` prints version; `duet-rpc doctor` checks env and prints a human-readable checklist, emits stable JSON with `--json`, respects `NO_COLOR`/non-TTY, and uses exit codes 0/1/2; `duet-rpc rpc --ping` responds with `pong` (text) or minimal JSON with `--json`, supports `--timeout <ms>` with exit code 124 on timeout; `duet-rpc prompt --file <f> --dry-run` returns a no-op response with a labeled block in text mode and, with `--json`, emits fields `mode`, `file`, `size_bytes`, `sha256`, `received_at`; accepts but ignores provider/model flags with warnings; usage errors exit 2 with a help hint; file I/O errors exit 3.
+    - Help behavior: synopsis `duet-rpc [COMMAND] [OPTIONS]`; footer `See 'duet-rpc <command> --help' for more information.`; colorized when TTY and honoring `NO_COLOR`; plain when piped; output is newline-terminated.
     - Error handling: unknown subcommand/flag prints error + usage and exits with code 2; no stack traces.
     - Version authority: version string is sourced from the package manifest.
-  - Emacs: Package loads; `M-x codex-rpc-version` shows codex-rpc version; command to start/stop codex-rpc subprocess; health check shows connected/ping OK; basic command palette entry present.
-- CI: Lints/builds/tests run on PR; `codex-rpc doctor` included in smoke checks across the support matrix; release artifacts produced for CLI; packaging instructions validated.
+  - Emacs: Package loads; `M-x duet-rpc-version` shows duet-rpc version; command to start/stop duet-rpc subprocess; health check shows connected/ping OK; basic command palette entry present.
+- CI: Lints/builds/tests run on PR; `duet-rpc doctor` included in smoke checks across the support matrix; release artifacts produced for CLI; packaging instructions validated.
 - Phase: V1 Foundation.
 
 ## Epic: Chat-to-Patch (Single File, E2E)

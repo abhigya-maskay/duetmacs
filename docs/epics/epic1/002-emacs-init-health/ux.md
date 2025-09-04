@@ -6,81 +6,81 @@ Overview
 - Provide a dedicated control surface and a separate log surface.
 
 Touchpoints (M-x)
-- codex-rpc-version: Show CLI version in minibuffer.
-- codex-rpc-health: Start/reuse process, ping, report in minibuffer.
-- codex-rpc-start: Start subprocess and open control buffer.
-- codex-rpc-stop: Stop subprocess (ask for confirmation).
-- codex-rpc-locate-cli: Prompt to set CLI path; validate and confirm.
-- codex-dispatch: Open transient-style menu in the control buffer (Magit-like).
+- duet-rpc-version: Show CLI version in minibuffer.
+- duet-rpc-health: Start/reuse process, ping, report in minibuffer.
+- duet-rpc-start: Start subprocess and open control buffer.
+- duet-rpc-stop: Stop subprocess (ask for confirmation).
+- duet-rpc-locate-cli: Prompt to set CLI path; validate and confirm.
+- duet-dispatch: Open transient-style menu in the control buffer (Magit-like).
 
 Buffers
-- *Codex RPC* (control):
-  - Opens automatically when a Codex session starts.
+- *DUET RPC* (control):
+  - Opens automatically when a DUET session starts.
   - Shows a short status header (e.g., Running/Not running; PID if running).
-  - In this buffer, pressing "?" opens the `codex-dispatch` menu.
-  - Does not collect logs/errors; those go to *Codex Logs*.
-- *Codex Logs* (logs):
+  - In this buffer, pressing "?" opens the `duet-dispatch` menu.
+  - Does not collect logs/errors; those go to *DUET Logs*.
+- *DUET Logs* (logs):
   - Append-only logs and error details for troubleshooting.
   - Never auto-opens; users open it via the menu or standard buffer switching.
 
-Transient Menu (codex-dispatch)
+Transient Menu (duet-dispatch)
 - Process: s Start, x Stop (confirm)
 - Health: h Health, v Version
 - Config: l Locate CLI, c Customize
-- View: L Open logs (*Codex Logs*), r Refresh status
+- View: L Open logs (*DUET Logs*), r Refresh status
 - q Close menu; ? Help
 
 Flows (happy path and Alt/Recovery)
 - Version
-  - Entry: M-x codex-rpc-version
-  - Success: Minibuffer → "codex-rpc vX.Y.Z"
-  - Alt: Missing CLI → Minibuffer → "Codex CLI not found. Set `codex-rpc-cli-path` or ensure `codex-rpc` on PATH. Run M-x codex-rpc-locate-cli. See *Codex Logs*."; details appended to *Codex Logs*.
+  - Entry: M-x duet-rpc-version
+  - Success: Minibuffer → "duet-rpc vX.Y.Z"
+  - Alt: Missing CLI → Minibuffer → "DUET CLI not found. Set `duet-rpc-cli-path` or ensure `duet-rpc` on PATH. Run M-x duet-rpc-locate-cli. See *DUET Logs*."; details appended to *DUET Logs*.
 
 - Health
-  - Entry: M-x codex-rpc-health (starts process if needed)
-  - Loading: Minibuffer → "Checking Codex RPC…"
+  - Entry: M-x duet-rpc-health (starts process if needed)
+  - Loading: Minibuffer → "Checking DUET RPC…"
   - Success: Minibuffer → "Connected: ping OK (N ms)"
-  - Alt: Timeout → Minibuffer → "Health check timed out after 3s; see *Codex Logs*"; details appended to *Codex Logs*.
-  - Alt: Missing CLI/permission errors → concise minibuffer + full details to *Codex Logs*.
+  - Alt: Timeout → Minibuffer → "Health check timed out after 3s; see *DUET Logs*"; details appended to *DUET Logs*.
+  - Alt: Missing CLI/permission errors → concise minibuffer + full details to *DUET Logs*.
 
 - Start
-  - Entry: M-x codex-rpc-start
-  - Loading: Minibuffer → "Starting Codex RPC…"
-  - Success: Minibuffer → "Started (PID NNNN)"; open *Codex RPC*; header shows Running + PID.
-  - Alt: Already running → Minibuffer → "Codex RPC already running (PID NNNN)".
-  - Errors: concise minibuffer + details to *Codex Logs*.
+  - Entry: M-x duet-rpc-start
+  - Loading: Minibuffer → "Starting DUET RPC…"
+  - Success: Minibuffer → "Started (PID NNNN)"; open *DUET RPC*; header shows Running + PID.
+  - Alt: Already running → Minibuffer → "DUET RPC already running (PID NNNN)".
+  - Errors: concise minibuffer + details to *DUET Logs*.
 
 - Stop (confirmation)
-  - Entry: M-x codex-rpc-stop
-  - Confirm: Minibuffer → "Stop Codex RPC process PID NNNN? (y/n)"
+  - Entry: M-x duet-rpc-stop
+  - Confirm: Minibuffer → "Stop DUET RPC process PID NNNN? (y/n)"
   - Success: Minibuffer → "Stopped."
   - Alt: Canceled → Minibuffer → "Canceled."
-  - Alt: Not running → Minibuffer → "No Codex RPC process is running."
+  - Alt: Not running → Minibuffer → "No DUET RPC process is running."
 
 - Locate CLI
-  - Entry: M-x codex-rpc-locate-cli
+  - Entry: M-x duet-rpc-locate-cli
   - Prompt for path (with completion); validate executable.
   - Success: Minibuffer → "CLI path set to …"; optionally offer to save via Customize.
-  - Alt: Invalid path → concise minibuffer + details to *Codex Logs*.
+  - Alt: Invalid path → concise minibuffer + details to *DUET Logs*.
 
 States & Microcopy
 - States: Not running, Starting, Running (PID), Stopping, Error.
-- Minibuffer copy is concise and action-oriented; errors include next step and "see *Codex Logs*" when details exist.
-- Header in *Codex RPC*: "Codex RPC: [Running PID NNNN | Not running]. Press ? for menu."
+- Minibuffer copy is concise and action-oriented; errors include next step and "see *DUET Logs*" when details exist.
+- Header in *DUET RPC*: "DUET RPC: [Running PID NNNN | Not running]. Press ? for menu."
 
 Defaults & Config (Customize)
-- defgroup: codex-rpc
-- defcustom: codex-rpc-cli-path (file path; nil → use PATH)
-- defcustom: codex-rpc-health-timeout (number; default 3 seconds)
-- Helper: M-x codex-rpc-customize opens the Customize group.
+- defgroup: duet-rpc
+- defcustom: duet-rpc-cli-path (file path; nil → use PATH)
+- defcustom: duet-rpc-health-timeout (number; default 3 seconds)
+- Helper: M-x duet-rpc-customize opens the Customize group.
 
 Validation Checklist
-- Commands exist and are discoverable via M-x and the *Codex RPC* menu.
-- *Codex RPC* opens on start; *Codex Logs* captures errors/timeouts and does not auto-open.
+- Commands exist and are discoverable via M-x and the *DUET RPC* menu.
+- *DUET RPC* opens on start; *DUET Logs* captures errors/timeouts and does not auto-open.
 - Minibuffer shows succinct success/error; logs record details.
 - Stop requires confirmation.
 - Missing CLI errors provide clear guidance and a path to recovery (locate CLI).
 
 Notes
 - Menu uses a transient-style interface similar to Magit for familiarity.
-- Avoid auto-opening *Codex Logs* to prevent context switching; always hint users to it on errors.
+- Avoid auto-opening *DUET Logs* to prevent context switching; always hint users to it on errors.

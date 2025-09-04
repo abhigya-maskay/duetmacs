@@ -1,6 +1,6 @@
 # Story 006: CLI Prompt Dry-Run
 
-As a CLI user, I want `codex-rpc prompt --file <path> --dry-run` to accept inputs and return a deterministic no-op response so that I can validate end-to-end wiring without making edits.
+As a CLI user, I want `duet-rpc prompt --file <path> --dry-run` to accept inputs and return a deterministic no-op response so that I can validate end-to-end wiring without making edits.
 
 ## Priority
 - Must
@@ -17,10 +17,10 @@ As a CLI user, I want `codex-rpc prompt --file <path> --dry-run` to accept input
 - Enables smoke tests and scripting of the full path from input parsing to output formatting without risking file modifications.
 
 ## Acceptance Criteria (Given/When/Then)
-- Given a readable file path, When I run `codex-rpc prompt --file README.md --dry-run`, Then it returns exit code 0 and prints a response indicating no-op with echoed inputs (file path, size, and content hash).
+- Given a readable file path, When I run `duet-rpc prompt --file README.md --dry-run`, Then it returns exit code 0 and prints a response indicating no-op with echoed inputs (file path, size, and content hash).
 - Given `--json`, When I run the command, Then the output is a stable JSON structure containing fields like `mode: "dry-run"`, `file`, `size_bytes`, `sha256`, and `received_at`.
   - JSON timestamps are ISO-8601 UTC with trailing `Z`; key order is not significant; field names use `snake_case`.
-- Given a usage error (e.g., missing `--file`), When I run the command, Then it exits with code 2 and prints a clear error with a one-line usage hint (e.g., "Run `codex-rpc prompt --help`.").
+- Given a usage error (e.g., missing `--file`), When I run the command, Then it exits with code 2 and prints a clear error with a one-line usage hint (e.g., "Run `duet-rpc prompt --help`.").
 - Given a file I/O error (e.g., not found, permission), When I run the command, Then it exits with code 3 and prints a clear cause without a usage hint.
 - Given extra flags like `--provider` or `--model`, When I run with `--dry-run`, Then they are accepted but ignored, with a notice that this is a no-op.
   - In text mode, warnings are written to stderr; in JSON mode, warnings are included in a `warnings` array.

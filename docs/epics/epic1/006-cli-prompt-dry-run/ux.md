@@ -43,7 +43,7 @@ UX level: Light, specify output, flags, errors, examples.
 ## Errors and Exit Codes
 - Success (exit 0): outputs as defined above; no extra text in stdout beyond the block/JSON.
 - Usage error (exit 2): missing `--file`, unsupported `--stdin`, or bad combinations.
-  - Text (stderr): concise reason + hint “Run `codex-rpc prompt --help`.”
+  - Text (stderr): concise reason + hint “Run `duet-rpc prompt --help`.”
   - JSON (stdout): `{"error":{"code":2,"message":"<reason>"}}` (and optional `warnings` if present).
 - File I/O error (exit 3): unreadable/missing file, permission denied.
   - Text (stderr): "Cannot read file '<path>': <reason>"
@@ -56,7 +56,7 @@ UX level: Light, specify output, flags, errors, examples.
 
 ## Examples
 - Success (text):
-  - Command: `codex-rpc prompt --file README.md --dry-run`
+  - Command: `duet-rpc prompt --file README.md --dry-run`
   - stdout:
     - Dry run: no changes made
     - File: README.md
@@ -65,23 +65,23 @@ UX level: Light, specify output, flags, errors, examples.
   - stderr: (empty unless warnings)
   - exit: 0
 - Success (JSON):
-  - Command: `codex-rpc prompt --file README.md --dry-run --json`
+  - Command: `duet-rpc prompt --file README.md --dry-run --json`
   - stdout: `{"mode":"dry-run","file":"README.md","size_bytes":1234,"sha256":"89abcdef...0123","received_at":"2025-01-02T03:04:05Z","warnings":[]}`
   - exit: 0
 - Ignored flags (text):
-  - Command: `codex-rpc prompt --file README.md --dry-run --provider oai --model gpt-4o`
+  - Command: `duet-rpc prompt --file README.md --dry-run --provider oai --model gpt-4o`
   - stderr: "Notice: ignoring --provider, --model in --dry-run"
   - exit: 0
 - Usage error:
-  - Command: `codex-rpc prompt --dry-run`
-  - stderr: "Missing required --file. Run 'codex-rpc prompt --help'."
+  - Command: `duet-rpc prompt --dry-run`
+  - stderr: "Missing required --file. Run 'duet-rpc prompt --help'."
   - exit: 2
 - File not found:
-  - Command: `codex-rpc prompt --file missing.md --dry-run`
+  - Command: `duet-rpc prompt --file missing.md --dry-run`
   - stderr: "Cannot read file 'missing.md': No such file or directory"
   - exit: 3
 - Large file warning:
-  - Command: `codex-rpc prompt --file big.bin --dry-run`
+  - Command: `duet-rpc prompt --file big.bin --dry-run`
   - stderr: "Notice: file size 85.2 MB exceeds 50 MB; proceeding"
   - exit: 0
 

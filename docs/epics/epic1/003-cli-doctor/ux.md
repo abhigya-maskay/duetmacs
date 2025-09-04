@@ -3,7 +3,7 @@ UX need: Moderate
 
 Phase: Run Doctor, Goal: actionable diagnostics with clear next steps
 
-Entry: user runs `codex-rpc doctor [--json] [--verbose] [--no-color]`
+Entry: user runs `duet-rpc doctor [--json] [--verbose] [--no-color]`
 
 Exit:
 - Complete: all required checks pass; exit 0
@@ -28,7 +28,7 @@ Touchpoints:
 Copy (key labels/messages):
 - Checks (ids → titles)
   - binary_version → Binary version
-    - OK: "codex-rpc vX.Y.Z"
+    - OK: "duet-rpc vX.Y.Z"
     - FAIL: "Unable to determine version"
   - platform → OS/arch
     - OK: "darwin-arm64" (example)
@@ -44,7 +44,7 @@ Copy (key labels/messages):
     - WARN: "Unrecognized keys: <list> (ignored)"
     - FAIL: "Config unreadable/invalid at <path>: <error>. See minimal example below."
   - env_overrides → Environment overrides
-    - INFO: "CODEX_RPC_CONFIG=<path> in effect" (redact if needed)
+    - INFO: "DUET_RPC_CONFIG=<path> in effect" (redact if needed)
 - Minimal config (TOML):
 
 ```
@@ -63,7 +63,7 @@ Patterns and States:
 
 Alt/Recovery:
 - Missing default config → show searched locations and the minimal TOML; suggest creating at project or XDG path
-- Explicit config via `CODEX_RPC_CONFIG` missing/unreadable → FAIL with next steps (fix path/permissions)
+- Explicit config via `DUET_RPC_CONFIG` missing/unreadable → FAIL with next steps (fix path/permissions)
 - Parse error → show truncated error with file/line if available; suggest comment out invalid keys; link to docs when available
 - PATH not resolving → show how to add install dir to PATH for the platform
 - Unsupported platform (info) → continue checks; note compatibility status
@@ -71,14 +71,14 @@ Alt/Recovery:
 
 Data/Decisions:
 - Config precedence (final):
-  1) ENV override: `CODEX_RPC_CONFIG` (highest)
-  2) Project: `./.codex-rpc.toml`, then `./codex-rpc.toml`
-  3) XDG: `$XDG_CONFIG_HOME/codex-rpc/config.toml`, else `~/.config/codex-rpc/config.toml`
+  1) ENV override: `DUET_RPC_CONFIG` (highest)
+  2) Project: `./.duet-rpc.toml`, then `./duet-rpc.toml`
+  3) XDG: `$XDG_CONFIG_HOME/duet-rpc/config.toml`, else `~/.config/duet-rpc/config.toml`
   4) System/global: none (skip)
 - Required vs optional:
   - Required: binary version, PATH resolution, OS/arch detection, readable config if explicitly specified or present in project
   - Warn-only: missing default config; unreadable default-location config
-  - Fail: unreadable config when explicitly specified via `CODEX_RPC_CONFIG` or found in project
+  - Fail: unreadable config when explicitly specified via `DUET_RPC_CONFIG` or found in project
 - Exit codes:
   - 0 = OK or WARN only
   - 1 = at least one required FAIL
@@ -94,7 +94,7 @@ Data/Decisions:
   - PATH entries and whether current exe dir is in PATH
   - Config search order, attempted paths with status (exists/perm/parse), chosen path, and precedence trace
   - Permissions: mode/owner for chosen config; simple `rwx`
-  - Env: `CODEX_RPC_CONFIG`, `XDG_CONFIG_HOME`, `NO_COLOR`, `CI`, `TERM` (redact sensitive values)
+  - Env: `DUET_RPC_CONFIG`, `XDG_CONFIG_HOME`, `NO_COLOR`, `CI`, `TERM` (redact sensitive values)
   - Platform: OS, arch, TTY detection
 
 Defaults:

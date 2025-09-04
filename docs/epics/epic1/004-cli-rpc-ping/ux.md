@@ -42,23 +42,23 @@ UX level: Light, specify output, flags, errors, examples.
 
 ## Examples
 - Default success:
-  - Command: `codex-rpc rpc --ping`
+  - Command: `duet-rpc rpc --ping`
   - stdout: `pong\n`
   - exit: 0
 - JSON success:
-  - Command: `codex-rpc rpc --ping --json`
+  - Command: `duet-rpc rpc --ping --json`
   - stdout: `{"status":"ok","version":"0.1.0","timestamp":"2025-01-15T12:34:56Z"}`
   - exit: 0
 - Timeout (text):
-  - Command: `codex-rpc rpc --ping --timeout 500`
+  - Command: `duet-rpc rpc --ping --timeout 500`
   - stderr: `timeout exceeded after 500 ms`
   - exit: 124
 - Timeout (json):
-  - Command: `codex-rpc rpc --ping --timeout 500 --json`
+  - Command: `duet-rpc rpc --ping --timeout 500 --json`
   - stdout: `{"status":"error","message":"timeout exceeded after 500 ms"}`
   - exit: 124
 - Invalid flag:
-  - Command: `codex-rpc rpc --ping --unknown`
+  - Command: `duet-rpc rpc --ping --unknown`
   - stderr: usage with brief help for `--ping`
   - exit: non-zero
 
