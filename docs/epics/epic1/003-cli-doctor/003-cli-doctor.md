@@ -27,7 +27,9 @@ As a CLI user, I want a `duet-rpc doctor` command that inspects my environment a
 - Given terminal capabilities and env, When I run with `--no-color` or `NO_COLOR=1` or in a non-TTY, Then output disables colors and Unicode icons; otherwise statuses are colorized.
 - Given failure conditions, When any required check fails, Then the command returns exit code 1; Given an unexpected internal error, Then it returns exit code 2; Given only warnings, Then it returns exit code 0.
 - Given `--verbose`, When the command runs, Then it includes a config discovery precedence trace (search order and attempted paths with statuses) and enumerates PATH entries along with the resolved executable path.
-- Given `--json`, When the command runs, Then the output includes fields: `version`, `platform` (`os`,`arch`), `checks` (each with `id`,`title`,`status`,`severity`,`details`,`doc_url?`), a `summary` counts object, and `elapsed_ms`.
+- Given config is loaded, When doctor runs, Then it reports which config file (if any) was loaded and its path.
+- Given config is loaded, When doctor runs with `--verbose`, Then it shows parsed config values (redacting secrets like API keys).
+- Given `--json`, When the command runs, Then the output includes fields: `version`, `platform` (`os`,`arch`), `checks` (each with `id`,`title`,`status`,`severity`,`details`,`doc_url?`), a `summary` counts object, `config` (with `loaded_from` path and `validated` boolean), and `elapsed_ms`.
 
 ## Assumptions / Open Questions
 - Assumption: Config discovery follows a predictable precedence (global → project) — Confidence: high — Impact: inconsistent diagnoses — Validation: document and align with Configuration epic.

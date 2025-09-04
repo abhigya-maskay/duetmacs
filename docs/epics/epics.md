@@ -22,12 +22,12 @@ Note on naming
 
 ## Epic: Chat-to-Patch (Single File, E2E)
 - Goal: Minimal end-to-end chat that produces a single-file patch with review/apply and backups.
-- UI Scope: Start/attach session; send region/buffer/file; stream status/tokens; single-file diff review; apply or rollback.
-- CLI Scope: Stdio RPC and one-shot command; prompt assembly for region/buffer/file; single provider; single-file patch generation; safety checks/backups.
+- UI Scope: Start/attach session; send region/buffer/file; stream status/tokens; single-file diff review; apply or rollback; display parsed code blocks with target file paths.
+- CLI Scope: Stdio RPC and one-shot command; prompt assembly for region/buffer/file; single provider; single-file patch generation; parse fenced code blocks from AI responses; extract file paths and content; handle multiple blocks per response; safety checks/backups.
 - Dependencies: None.
 - Acceptance:
-  - From Emacs: start chat, request an edit to the current file, see a diff, apply or rollback; status and token counters visible.
-  - From CLI one-shot: pass file/region and prompt; receive a diff/patch; apply with backup created.
+  - From Emacs: start chat, request an edit to the current file, see a diff, apply or rollback; status and token counters visible; code blocks display with file destinations before applying.
+  - From CLI one-shot: pass file/region and prompt; receive a diff/patch; apply with backup created; correctly parse markdown code blocks with file hints (e.g., ```python:app.py).
 - Phase: V1 Foundation.
 
 ## Epic: Scoped Context & Templates

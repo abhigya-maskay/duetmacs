@@ -18,6 +18,19 @@ This document outlines a high-level, three-piece architecture and the responsibi
 - Local Daemon/Socket: Optional background service to share caches/indexes across editor instances; not required for v1.
 - HTTP/gRPC Endpoint: For multi-app or remote workflows; introduces security and ops overhead—defer unless needed.
 
+## 4) Error Handling & Recovery
+- Heartbeat: Periodic keepalive messages between Emacs and duet-rpc (every 30s); detect stalled processes.
+- Reconnection: Automatic restart with exponential backoff (1s, 2s, 4s... max 30s) on duet-rpc crash.
+- Request Queue: Buffer pending requests during disconnection; replay on reconnect or timeout after 60s.
+- Graceful Degradation: Show clear status when duet-rpc unavailable; allow read-only operations and manual recovery.
+
+## 5) Observability
+- Structured Logging: Support debug/info/warn/error levels with consistent format; configurable per-component (Emacs UI, duet-rpc).
+
+## 6) Security & Trust Boundaries
+- Input Sanitization: Validate file paths and commands; prevent directory traversal and command injection.
+- Secrets Handling: API keys never logged or cached; use secure environment variables or keychain integration.
+
 ---
 
 Notes
