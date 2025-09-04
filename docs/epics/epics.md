@@ -12,7 +12,7 @@ Note on naming
 - CLI Scope: CLI project scaffolding (binary: `codex-rpc`; language toolchain; entrypoint; subcommands: `version`, `doctor`, `rpc --ping`, `prompt --dry-run`); logging; config loading precedence; packaging/release scripts.
 - Dependencies: None.
 - Acceptance:
-  - CLI: `codex-rpc --version` prints version; `codex-rpc doctor` checks env and prints a human-readable checklist, emits stable JSON with `--json`, respects `NO_COLOR`/non-TTY, and uses exit codes 0/1/2; `codex-rpc rpc --ping` responds with `pong` (text) or minimal JSON with `--json`, supports `--timeout <ms>` with exit code 124 on timeout; `codex-rpc prompt --file <f> --dry-run` returns a no-op response.
+  - CLI: `codex-rpc --version` prints version; `codex-rpc doctor` checks env and prints a human-readable checklist, emits stable JSON with `--json`, respects `NO_COLOR`/non-TTY, and uses exit codes 0/1/2; `codex-rpc rpc --ping` responds with `pong` (text) or minimal JSON with `--json`, supports `--timeout <ms>` with exit code 124 on timeout; `codex-rpc prompt --file <f> --dry-run` returns a no-op response with a labeled block in text mode and, with `--json`, emits fields `mode`, `file`, `size_bytes`, `sha256`, `received_at`; accepts but ignores provider/model flags with warnings; usage errors exit 2 with a help hint; file I/O errors exit 3.
     - Help behavior: synopsis `codex-rpc [COMMAND] [OPTIONS]`; footer `See 'codex-rpc <command> --help' for more information.`; colorized when TTY and honoring `NO_COLOR`; plain when piped; output is newline-terminated.
     - Error handling: unknown subcommand/flag prints error + usage and exits with code 2; no stack traces.
     - Version authority: version string is sourced from the package manifest.
