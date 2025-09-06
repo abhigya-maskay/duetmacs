@@ -7,21 +7,24 @@ Overview
 
 Touchpoints (M-x)
 - duet-rpc-version: Show CLI version in minibuffer.
-- duet-rpc-health: Start/reuse process, ping, report in minibuffer.
+- duet-rpc-health: Start/reuse process (auto-start if needed), ping, report in minibuffer.
 - duet-rpc-start: Start subprocess and open control buffer.
 - duet-rpc-stop: Stop subprocess (ask for confirmation).
 - duet-rpc-locate-cli: Prompt to set CLI path; validate and confirm.
 - duet-dispatch: Open transient-style menu in the control buffer (Magit-like).
+- duet-refresh: Quick ping and status check (added in Story 007).
 
 Buffers
 - *DUET RPC* (control):
-  - Opens automatically when a DUET session starts.
+  - Opens automatically when `duet-rpc-start` is invoked (first session start).
   - Shows a short status header (e.g., Running/Not running; PID if running).
   - In this buffer, pressing "?" opens the `duet-dispatch` menu.
   - Does not collect logs/errors; those go to *DUET Logs*.
+  - Truncates at 2,000 lines (drops oldest entries).
 - *DUET Logs* (logs):
   - Append-only logs and error details for troubleshooting.
   - Never auto-opens; users open it via the menu or standard buffer switching.
+  - Truncates at 20,000 lines (drops oldest entries).
 
 Transient Menu (duet-dispatch)
 - Process: s Start, x Stop (confirm)

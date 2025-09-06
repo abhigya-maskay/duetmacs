@@ -19,18 +19,20 @@ As an Emacs user, I want the Emacs package to load, expose a version command, an
 
 ## Acceptance Criteria (Given/When/Then)
 - Given the package is installed, When I run `M-x duet-rpc-version`, Then it displays the `duet-rpc` CLI version (via invoking the binary) and exits cleanly.
-- Given the package is installed, When I run `M-x duet-rpc-health`, Then it starts a subprocess if needed and shows "connected/ping OK" in the minibuffer.
+- Given the package is installed, When I run `M-x duet-rpc-health`, Then it starts a subprocess if needed (auto-start) and shows "connected/ping OK" in the minibuffer (initially basic ping; evolves to full diagnostics in Story 007).
 - Given a missing or misconfigured CLI, When I run either command, Then I see a clear, actionable error with guidance to configure the binary path.
-- Given the package is loaded, When I open the command palette/commands list, Then entries exist to start and stop the subprocess.
+- Given the package is loaded, When I open the command palette/commands list, Then entries exist to start, stop, refresh, and check the subprocess.
 - Given the subprocess is already running, When I invoke health, Then it reuses the running process and returns within a short, documented timeout.
 - Given I attempt to stop the subprocess, When I run `M-x duet-rpc-stop`, Then it asks for confirmation and reports `Stopped.` or `Canceled.` in the minibuffer accordingly.
 - Given the CLI is missing or not executable, When I invoke version/health/start, Then I get a concise minibuffer message that suggests `M-x duet-rpc-locate-cli` and references `*DUET Logs*` for details; details are appended to `*DUET Logs*`.
 - Given a health check exceeds the default timeout (3s), When I run `M-x duet-rpc-health`, Then it reports a timeout in the minibuffer and appends details (including elapsed time) to `*DUET Logs*`.
 - Given errors or logs are produced, Then `*DUET Logs*` never auto-opens and error messages reference it for details.
 - Given I am in the `*DUET RPC*` control buffer, When I press `?`, Then the `duet-dispatch` menu opens.
+- Given I run `M-x duet-refresh`, Then it performs a quick ping and status check without full diagnostics.
+- Given buffer size limits, Then `*DUET RPC*` truncates at 2,000 lines and `*DUET Logs*` truncates at 20,000 lines (oldest entries dropped).
 
 ## UI Surfaces and Interactions (per UX)
-- Control Buffer: A dedicated `*DUET RPC*` control buffer opens on start and shows a short status header (e.g., Running/Not running; PID if running). This buffer does not collect logs.
+- Control Buffer: A dedicated `*DUET RPC*` control buffer opens when `duet-rpc-start` is invoked and shows a short status header (e.g., Running/Not running; PID if running). This buffer does not collect logs.
 - Log Buffer: A separate append-only `*DUET Logs*` buffer captures logs and error details for troubleshooting; it does not auto-open.
 - Transient Menu: `duet-dispatch` opens from the control buffer (e.g., `?`) and provides:
   - Process: `s` Start, `x` Stop (confirm)

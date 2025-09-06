@@ -34,6 +34,7 @@ Scope: Discoverable `M-x duet-*` commands and a minimal, Doom/Evil-first keybind
     - `[12:05:01] status: stopped`
 - `duet-rpc-health` (doctor):
   - Default: run full diagnostics (`doctor`). Append concise summary to *DUET RPC*; write detailed output to *DUET Logs*.
+  - Note: Evolves from basic ping (Story 002) to comprehensive doctor checks in this story.
   - One-liner examples:
     - `[12:06:10] health: OK (7 checks, 0 warnings, 0 errors, 350ms)`
     - `[12:06:10] health: 2 errors detected — see logs`
