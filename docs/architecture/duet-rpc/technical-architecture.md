@@ -66,7 +66,7 @@ flowchart LR
 - **Process recovery**: Auto-restart with exponential backoff
 
 ### Quality
-- **Testing**: Property tests (QuickCheck) for core logic, unit tests for integration (tasty framework)
+- **Testing**: Property tests (hedgehog) for core logic, unit tests for integration (tasty framework)
 - **Linting**: hlint + ormolu for consistent code
 - **Logging**: Four levels (error, warn, info, debug) with --debug flag for RPC dumps
 
