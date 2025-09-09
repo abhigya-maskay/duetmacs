@@ -34,6 +34,6 @@ This document outlines a high-level, three-piece architecture and the responsibi
 ---
 
 Notes
-- Naming: `Claude Code` refers to Anthropic's CLI; `duet-rpc` is our RPC/CLI binary used by Emacs and for one-shots.
+- Naming: `codex` refers to OpenAI's CLI; `claude-code` refers to Anthropic's CLI; `duet-rpc` is our RPC/CLI binary used by Emacs and for one-shots, supporting both providers.
 - v1 targets Emacs UI + duet-rpc over stdio; no network server required.
 - CLI proposes patches; Emacs applies edits after user approval (dry-run by default, allowlist paths, size/file caps).
