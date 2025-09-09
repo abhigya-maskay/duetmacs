@@ -3,8 +3,9 @@
 This document defines vertical-slice epics so that each delivers a testable, end-to-end feature via both Emacs UI and an equivalent CLI one-shot. Each epic lists goal, scope (split UI/CLI), dependencies, acceptance (must be verifiable from UI and CLI), and phase.
 
 Note on naming
-- Claude Code: Anthropic's CLI tool.
-- duet-rpc: Our RPC/CLI binary used by Emacs and for one-shots.
+- codex: OpenAI's CLI tool.
+- claude-code: Anthropic's CLI tool.
+- duet-rpc: Our RPC/CLI binary used by Emacs and for one-shots, supporting both OpenAI and Anthropic providers.
 
 ## Epic: Project Bootstrap (CLI + Emacs Plugin)
 - Goal: Establish working skeletons for duet-rpc (our CLI) and the Emacs package with tooling, packaging, CI, and a minimal RPC handshake so both can run end-to-end in a no-op mode.
