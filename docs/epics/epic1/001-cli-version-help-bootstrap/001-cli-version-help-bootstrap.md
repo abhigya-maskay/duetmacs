@@ -41,6 +41,7 @@ As a CLI user, I want a minimal `duet-rpc` binary that builds and exposes versio
 - Prepare structure for Story 003 to validate
 
 ## Acceptance Criteria (Given/When/Then)
+- Given Emacs attempts to spawn duet-rpc subprocess, When the initial spawn fails, Then it retries up to 3 times with 1s delay between attempts and logs clear error messages indicating the spawn failure reason.
 - Given the binary is installed, When I run `duet-rpc --version`, Then it prints a semantic version (e.g., `0.1.0`) and exits with code 0.
 - Given the binary is installed, When I run `duet-rpc version`, Then it prints the same semantic version and exits with code 0.
 - Given the binary is installed, When I run `duet-rpc --help`, Then it shows a synopsis and lists subcommands `version`, `doctor`, `rpc`, and `prompt` with one-line descriptions, and exits 0.
@@ -52,15 +53,16 @@ As a CLI user, I want a minimal `duet-rpc` binary that builds and exposes versio
  - Given typical developer hardware, Then the above commands respond within ~100ms.
  - Given `--log-level debug`, When I run `duet-rpc --log-level debug version`, Then structured debug logs appear on stderr with timestamp, level, and message.
  - Given no log flags, When I run any command, Then only warnings and errors are logged to stderr by default.
- - Given `DUET_RPC_LOG=/tmp/duet.log`, When I run any command, Then logs are written to the specified file instead of stderr.
+- Given `DUET_RPC_LOG=/tmp/duet.log`, When I run any command, Then logs are written to the specified file instead of stderr.
+- Given `DUET_RPC_LOG` points to an invalid or unwritable path, When I run any command, Then logging falls back to stderr with a clear single warning about the log file failure (no stack trace), the command output remains unchanged, and the command's exit code follows its normal semantics (no crash).
  - Given `NO_COLOR=1` or piped output, When I run `duet-rpc --help`, Then output contains no ANSI color codes.
  - Given a TTY without NO_COLOR, When I run `duet-rpc --help`, Then output includes colors for headings and commands.
  - Given `--no-color` flag, When I run `duet-rpc --no-color --help`, Then output contains no ANSI codes regardless of TTY.
 
 ## Assumptions / Open Questions
 - Assumption: Project uses a single source of truth for version (e.g., `--version` reads from build metadata) — Confidence: high — Impact if wrong: duplicate version sources drift — Validation: choose and document a single version authority.
-- Open question: Preferred CLI framework (e.g., native, Clap, Cobra, etc.)? — Resolve before implementation story.
- - Assumption: Version authority is the package manifest (e.g., Cargo.toml) and the CLI framework's default help layout is used.
+- Decision: CLI framework is optparse-applicative (Haskell).
+- Decision: Version authority is the Cabal package version (via the generated Paths module); help layout uses optparse-applicative defaults.
 
 ## Defaults
 - No args shows help and exits 0.
