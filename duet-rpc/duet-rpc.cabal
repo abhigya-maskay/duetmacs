@@ -1,0 +1,45 @@
+cabal-version:   3.14
+name:            duet-rpc
+version:         0.1.0.0
+synopsis:        Haskell backend providing the DuetMacs RPC core for AI-assisted development.
+description:     Implements the DuetMacs RPC CLI, orchestrating sessions, prompt assembly, and multi-provider AI integration for Emacs users.
+license:         MIT
+author:          Abhigya Maskay
+maintainer:      ave70011@gmail.com
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+common package-deps
+    build-depends:    base >=4.19.2.0 && <4.21,
+                      optparse-applicative,
+                      text,
+                      ansi-terminal,
+                      katip,
+                      time,
+                      directory,
+                      filepath
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings, package-deps
+    exposed-modules:  MyLib
+    hs-source-dirs:   src
+    default-language: Haskell2010
+
+executable duet-rpc
+    import:           warnings, package-deps
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    build-depends:    duet-rpc
+    default-language: Haskell2010
+
+
+test-suite duet-rpc-test
+    import:           warnings, package-deps
+    type:             exitcode-stdio-1.0
+    main-is:          Main.hs
+    hs-source-dirs:   test
+    build-depends:    duet-rpc
+    default-language: Haskell2010
