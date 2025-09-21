@@ -24,7 +24,8 @@ common warnings
 
 library
     import:           warnings, package-deps
-    exposed-modules:  MyLib
+    exposed-modules:  Duet.Rpc.CLI.Core
+                      Duet.Rpc.CLI.Shell
     hs-source-dirs:   src
     default-language: Haskell2010
 
