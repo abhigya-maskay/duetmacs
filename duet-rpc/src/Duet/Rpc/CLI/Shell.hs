@@ -1,6 +1,5 @@
 module Duet.Rpc.CLI.Shell (runCli) where
 
-import qualified Options.Applicative as OA
 import Duet.Rpc.CLI.Core
   ( CliCommand (..)
   , CliInstruction (..)
@@ -8,6 +7,8 @@ import Duet.Rpc.CLI.Core
   , planExecution
   , prefsWithHelp
   )
+import Duet.Rpc.VersionManager (renderVersion)
+import qualified Options.Applicative as OA
 
 runCli :: IO ()
 runCli = do
@@ -19,7 +20,7 @@ runCli = do
     runInstruction (InstrRunCommand cmd) = dispatch cmd
 
     dispatch :: CliCommand -> IO ()
-    dispatch CmdVersion = putStrLn "Version called"
+    dispatch CmdVersion = putStrLn renderVersion
     dispatch CmdDoctor = putStrLn "Doctor called"
     dispatch CmdRpc = putStrLn "RPC called"
     dispatch CmdPrompt = putStrLn "Prompt called"
