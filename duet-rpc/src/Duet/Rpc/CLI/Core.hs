@@ -43,7 +43,8 @@ data CliInstruction
 planExecution :: CliOptions -> [CliInstruction]
 planExecution cliOpts
   | optShowVersion cliOpts = [InstrShowVersion]
-  | otherwise = maybe [] (pure . InstrRunCommand) (optCommand cliOpts)
+  | Just cmd <- optCommand cliOpts = [InstrRunCommand cmd]
+  | otherwise = []
 
 prefsWithHelp :: OA.ParserPrefs
 prefsWithHelp = OA.prefs (OA.showHelpOnEmpty <> OA.showHelpOnError)

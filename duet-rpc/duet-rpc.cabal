@@ -26,6 +26,8 @@ library
     import:           warnings, package-deps
     exposed-modules:  Duet.Rpc.CLI.Core
                       Duet.Rpc.CLI.Shell
+                      Duet.Rpc.OutputFormatter.Core
+                      Duet.Rpc.OutputFormatter.Shell
                       Duet.Rpc.VersionManager
     other-modules:    Paths_duet_rpc
     hs-source-dirs:   src
