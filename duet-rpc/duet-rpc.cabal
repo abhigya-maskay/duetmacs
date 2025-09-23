@@ -11,6 +11,7 @@ extra-doc-files: CHANGELOG.md
 
 common package-deps
     build-depends:    base >=4.19.2.0 && <4.21,
+                      containers,
                       optparse-applicative,
                       text,
                       ansi-terminal,
@@ -26,6 +27,7 @@ library
     import:           warnings, package-deps
     exposed-modules:  Duet.Rpc.CLI.Core
                       Duet.Rpc.CLI.Shell
+                      Duet.Rpc.Logger
                       Duet.Rpc.OutputFormatter.Core
                       Duet.Rpc.OutputFormatter.Shell
                       Duet.Rpc.VersionManager
@@ -34,6 +36,8 @@ library
     default-language: Haskell2010
     default-extensions: StrictData
                         OverloadedStrings
+                        NamedFieldPuns
+                        RecordWildCards
 
 executable duet-rpc
     import:           warnings, package-deps
@@ -43,6 +47,8 @@ executable duet-rpc
     default-language: Haskell2010
     default-extensions: StrictData
                         OverloadedStrings
+                        NamedFieldPuns
+                        RecordWildCards
 
 
 test-suite duet-rpc-test
@@ -59,3 +65,5 @@ test-suite duet-rpc-test
     default-language: Haskell2010
     default-extensions: StrictData
                         OverloadedStrings
+                        NamedFieldPuns
+                        RecordWildCards

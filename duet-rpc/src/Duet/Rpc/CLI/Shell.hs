@@ -11,13 +11,15 @@ import Duet.Rpc.CLI.Core
   ( CliCommand (..)
   , CliInstruction (..)
   , CliOptions (..)
-  , LogLevel (..)
-  , cliParserInfo
+  , CommandAction (..)
+  , commandActionOf
   , planExecution
-  , prefsWithHelp
+  , parseCli
+  , defaultCliOptions
   , noColorLongFlag
   , noColorShortFlag
   )
+import Duet.Rpc.Logger (logDebug, withLogger)
 import Duet.Rpc.OutputFormatter.Shell (ShellFormatter (..), initShellFormatter)
 import Duet.Rpc.VersionManager (renderVersion)
 
@@ -25,12 +27,14 @@ runCli :: IO ()
 runCli = do
   args <- getArgs
   progName <- getProgName
-  case OA.execParserPure prefsWithHelp cliParserInfo args of
-    OA.Success cliOpts -> do
-      formatter <- initShellFormatter cliOpts
-      case planExecution cliOpts of
-        Just instr -> runInstruction formatter instr
-        Nothing -> return ()
+  case parseCli args of
+    OA.Success cliOpts ->
+      withLogger (optLogLevel cliOpts) $ \logEnv -> do
+        logDebug logEnv "duet-rpc CLI startup"
+        formatter <- initShellFormatter cliOpts
+        case planExecution cliOpts of
+          Just instr -> runInstruction formatter instr
+          Nothing -> pure ()
     OA.Failure failure -> do
       let (msg, code) = OA.renderFailure failure progName
       formatter <- initShellFormatter (formatterOptions args)
@@ -45,19 +49,27 @@ runCli = do
     runInstruction fmt (InstrRunCommand cmd) = dispatch fmt cmd
 
     dispatch :: ShellFormatter -> CliCommand -> IO ()
-    dispatch fmt cmd =
-      let out = writeStdout fmt
-       in case cmd of
-            CmdVersion -> out renderVersion
-            CmdDoctor -> out "Doctor called"
-            CmdRpc -> out "RPC called"
-            CmdPrompt -> out "Prompt called"
+    dispatch fmt cmd = maybe (pure ()) (`runAction` fmt) (commandActionOf cmd)
+
+    runAction :: CommandAction -> ShellFormatter -> IO ()
+    runAction action formatter =
+      case action of
+        CommandActionVersion -> writeStdout formatter renderVersion
+        CommandActionDoctor -> runDoctor formatter
+        CommandActionRpc -> runRpc formatter
+        CommandActionPrompt -> runPrompt formatter
+
+    runDoctor, runRpc, runPrompt :: ShellFormatter -> IO ()
+    runDoctor = writeStdoutWith "Doctor called"
+    runRpc = writeStdoutWith "RPC called"
+    runPrompt = writeStdoutWith "Prompt called"
+
+    writeStdoutWith :: T.Text -> ShellFormatter -> IO ()
+    writeStdoutWith msg fmt = writeStdout fmt msg
 
     formatterOptions :: [String] -> CliOptions
     formatterOptions xs =
-      CliOptions
-        { optShowVersion = False
-        , optNoColor = any (`elem` ["--" ++ noColorLongFlag, "-" ++ [noColorShortFlag]]) xs
-        , optLogLevel = LogInfo
-        , optCommand = Nothing
-        }
+      defaultCliOptions { optNoColor = any isNoColorFlag xs }
+      where
+        isNoColorFlag :: String -> Bool
+        isNoColorFlag arg = arg == ("--" ++ noColorLongFlag) || arg == ("-" ++ [noColorShortFlag])

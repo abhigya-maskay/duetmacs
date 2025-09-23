@@ -1,5 +1,8 @@
 module Duet.Rpc.OutputFormatter.Shell
   ( ShellFormatter (..)
+  , HandleProfile (..)
+  , TerminalProfile (..)
+  , buildShellFormatter
   , initShellFormatter
   ) where
 
@@ -24,30 +27,53 @@ data ShellFormatter = ShellFormatter
   , writeStderr :: Text -> IO ()
   }
 
-initShellFormatter :: CliOptions -> IO ShellFormatter
-initShellFormatter cliOpts = do
-  envNoColor <- lookupEnv "NO_COLOR"
-  stdoutSupportsAnsi <- hSupportsANSI stdout
-  stderrSupportsAnsi <- hSupportsANSI stderr
-  stdoutIsTTY <- hIsTerminalDevice stdout
-  stderrIsTTY <- hIsTerminalDevice stderr
-  let envNoColorEnabled = isJust envNoColor
+data HandleProfile = HandleProfile
+  { handleIsTTY :: Bool
+  , handleSupportsAnsi :: Bool
+  }
 
-  let formatter =
-        mkOutputFormatter
-          FormatterSettings
-            { stdoutColorMode = resolveColorMode envNoColorEnabled stdoutIsTTY stdoutSupportsAnsi
-            , stderrColorMode = resolveColorMode envNoColorEnabled stderrIsTTY stderrSupportsAnsi
-            }
+data TerminalProfile = TerminalProfile
+  { stdoutProfile :: HandleProfile
+  , stderrProfile :: HandleProfile
+  , envNoColorEnabled :: Bool
+  }
 
-  pure
+buildShellFormatter :: TerminalProfile -> CliOptions -> ShellFormatter
+buildShellFormatter terminal cliOpts =
+  let
+    formatter =
+      mkOutputFormatter
+        FormatterSettings
+          { stdoutColorMode = resolve (stdoutProfile terminal)
+          , stderrColorMode = resolve (stderrProfile terminal)
+          }
+  in
     ShellFormatter
       { writeStdout = TIO.putStr . formatStdout formatter
       , writeStderr = TIO.hPutStr stderr . formatStderr formatter
       }
-
   where
-    resolveColorMode :: Bool -> Bool -> Bool -> ColorMode
-    resolveColorMode envDisabled isTTY supportsAnsi
-      | optNoColor cliOpts || envDisabled || not isTTY || not supportsAnsi = ColorDisabled
+    resolve :: HandleProfile -> ColorMode
+    resolve handleProfile
+      | optNoColor cliOpts
+          || envNoColorEnabled terminal
+          || not (handleIsTTY handleProfile)
+          || not (handleSupportsAnsi handleProfile) = ColorDisabled
       | otherwise = ColorEnabled
+
+initShellFormatter :: CliOptions -> IO ShellFormatter
+initShellFormatter cliOpts = do
+  envNoColor <- lookupEnv "NO_COLOR"
+  stdoutAnsi <- hSupportsANSI stdout
+  stderrAnsi <- hSupportsANSI stderr
+  stdoutTTY <- hIsTerminalDevice stdout
+  stderrTTY <- hIsTerminalDevice stderr
+
+  let terminal =
+        TerminalProfile
+          { stdoutProfile = HandleProfile stdoutTTY stdoutAnsi
+          , stderrProfile = HandleProfile stderrTTY stderrAnsi
+          , envNoColorEnabled = isJust envNoColor
+          }
+
+  pure (buildShellFormatter terminal cliOpts)
