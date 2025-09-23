@@ -6,6 +6,11 @@ module Duet.Rpc.OutputFormatter.Shell
 import Data.Maybe (isJust)
 import Data.Text (Text)
 import qualified Data.Text.IO as TIO
+import System.Environment (lookupEnv)
+import System.IO (stdout, stderr, hIsTerminalDevice)
+
+import System.Console.ANSI (hSupportsANSI)
+
 import Duet.Rpc.CLI.Core (CliOptions (..))
 import Duet.Rpc.OutputFormatter.Core
   ( ColorMode (..)
@@ -13,9 +18,6 @@ import Duet.Rpc.OutputFormatter.Core
   , OutputFormatter (..)
   , mkOutputFormatter
   )
-import System.Environment (lookupEnv)
-import System.IO (stdout, stderr, hIsTerminalDevice)
-import System.Console.ANSI (hSupportsANSI)
 
 data ShellFormatter = ShellFormatter
   { writeStdout :: Text -> IO ()
@@ -47,7 +49,5 @@ initShellFormatter cliOpts = do
   where
     resolveColorMode :: Bool -> Bool -> Bool -> ColorMode
     resolveColorMode envDisabled isTTY supportsAnsi
-      | disableColor = ColorDisabled
+      | optNoColor cliOpts || envDisabled || not isTTY || not supportsAnsi = ColorDisabled
       | otherwise = ColorEnabled
-      where
-        disableColor = optNoColor cliOpts || envDisabled || not isTTY || not supportsAnsi

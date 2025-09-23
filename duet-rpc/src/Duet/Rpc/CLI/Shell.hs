@@ -1,8 +1,12 @@
-{-# LANGUAGE OverloadedStrings #-}
 
 module Duet.Rpc.CLI.Shell (runCli) where
 
 import qualified Data.Text as T
+import System.Environment (getArgs, getProgName)
+import System.Exit (ExitCode (..), exitWith)
+
+import qualified Options.Applicative as OA
+
 import Duet.Rpc.CLI.Core
   ( CliCommand (..)
   , CliInstruction (..)
@@ -11,12 +15,11 @@ import Duet.Rpc.CLI.Core
   , cliParserInfo
   , planExecution
   , prefsWithHelp
+  , noColorLongFlag
+  , noColorShortFlag
   )
-import Duet.Rpc.VersionManager (renderVersion)
 import Duet.Rpc.OutputFormatter.Shell (ShellFormatter (..), initShellFormatter)
-import qualified Options.Applicative as OA
-import System.Environment (getArgs, getProgName)
-import System.Exit (ExitCode (..), exitWith)
+import Duet.Rpc.VersionManager (renderVersion)
 
 runCli :: IO ()
 runCli = do
@@ -37,7 +40,6 @@ runCli = do
       putStr completionOutput
   where
     runInstruction :: ShellFormatter -> CliInstruction -> IO ()
-    runInstruction fmt InstrShowVersion = dispatch fmt CmdVersion
     runInstruction fmt (InstrRunCommand cmd) = dispatch fmt cmd
 
     dispatch :: ShellFormatter -> CliCommand -> IO ()
@@ -53,7 +55,7 @@ runCli = do
     formatterOptions xs =
       CliOptions
         { optShowVersion = False
-        , optNoColor = any (`elem` ["--no-color", "-n"]) xs
+        , optNoColor = any (`elem` ["--" ++ noColorLongFlag, "-" ++ [noColorShortFlag]]) xs
         , optLogLevel = LogInfo
         , optCommand = Nothing
         }

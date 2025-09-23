@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Duet.Rpc.OutputFormatter.Core
   ( ColorMode (..)
   , FormatterSettings (..)
@@ -45,11 +43,10 @@ mkOutputFormatter settings =
     formatWith mode = ensureTrailingNewline . applyColorMode mode
 
 ensureTrailingNewline :: Text -> Text
-ensureTrailingNewline txt =
-  case T.unsnoc txt of
-    Nothing -> T.singleton '\n'
-    Just (_, '\n') -> txt
-    Just _ -> T.snoc txt '\n'
+ensureTrailingNewline txt
+  | T.null txt = T.singleton '\n'
+  | T.isSuffixOf "\n" txt = txt
+  | otherwise = T.snoc txt '\n'
 
 applyColorMode :: ColorMode -> Text -> Text
 applyColorMode ColorDisabled = stripAnsi
@@ -69,9 +66,12 @@ ansiSuffix = renderSGR [Reset]
 renderSGR :: [SGR] -> Text
 renderSGR = T.pack . setSGRCode
 
+ansiEscape :: Text
+ansiEscape = "\ESC"
+
 stripAnsi :: Text -> Text
 stripAnsi txt =
-  case T.breakOn "\ESC" txt of
+  case T.breakOn ansiEscape txt of
     (prefix, rest)
       | T.null rest -> prefix
       | otherwise ->
@@ -88,5 +88,8 @@ stripAnsi txt =
       case T.uncons t of
         Nothing -> T.empty
         Just (c, tailTxt)
-          | c >= '@' && c <= '~' -> stripAnsi tailTxt
+          | isAnsiTerminator c -> stripAnsi tailTxt
           | otherwise -> stripUntilEnd tailTxt
+
+    isAnsiTerminator :: Char -> Bool
+    isAnsiTerminator c = c >= '@' && c <= '~'

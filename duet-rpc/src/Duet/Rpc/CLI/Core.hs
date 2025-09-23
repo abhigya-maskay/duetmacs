@@ -6,10 +6,11 @@ module Duet.Rpc.CLI.Core
   , CliCommand (..)
   , prefsWithHelp
   , cliParserInfo
+  , noColorLongFlag
+  , noColorShortFlag
   ) where
 
-import Data.List (find, intercalate)
-import Data.Maybe (fromMaybe)
+import Data.List (intercalate)
 import Options.Applicative ((<**>))
 import qualified Options.Applicative as OA
 
@@ -36,15 +37,20 @@ data CliOptions = CliOptions
   deriving (Eq, Show)
 
 data CliInstruction
-  = InstrShowVersion
-  | InstrRunCommand CliCommand
+  = InstrRunCommand CliCommand
   deriving (Eq, Show)
 
 planExecution :: CliOptions -> [CliInstruction]
 planExecution cliOpts
-  | optShowVersion cliOpts = [InstrShowVersion]
+  | optShowVersion cliOpts = [InstrRunCommand CmdVersion]
   | Just cmd <- optCommand cliOpts = [InstrRunCommand cmd]
   | otherwise = []
+
+noColorLongFlag :: String
+noColorLongFlag = "no-color"
+
+noColorShortFlag :: Char
+noColorShortFlag = 'n'
 
 prefsWithHelp :: OA.ParserPrefs
 prefsWithHelp = OA.prefs (OA.showHelpOnEmpty <> OA.showHelpOnError)
@@ -59,7 +65,7 @@ cliParserInfo = OA.info (cliOptionsParser <**> OA.helper) OA.fullDesc
     versionFlag = OA.switch (OA.long "version" <> OA.short 'V' <> OA.help "Print version information")
 
     noColorFlag :: OA.Parser Bool
-    noColorFlag = OA.switch (OA.long "no-color" <> OA.short 'n' <> OA.help "Disable colored output")
+    noColorFlag = OA.switch (OA.long noColorLongFlag <> OA.short noColorShortFlag <> OA.help "Disable colored output")
 
     logLevelOption :: OA.Parser LogLevel
     logLevelOption =
@@ -75,12 +81,17 @@ cliParserInfo = OA.info (cliOptionsParser <**> OA.helper) OA.fullDesc
     commandParser = OA.optional . OA.hsubparser $ mconcat commandInfos
 
     commandInfos :: [OA.Mod OA.CommandFields CliCommand]
-    commandInfos =
-      [ OA.command "version" (OA.info (pure CmdVersion) (OA.progDesc "Show version information"))
-      , OA.command "doctor" (OA.info (pure CmdDoctor) (OA.progDesc "Run diagnostics"))
-      , OA.command "rpc" (OA.info (pure CmdRpc) (OA.progDesc "Start RPC server"))
-      , OA.command "prompt" (OA.info (pure CmdPrompt) (OA.progDesc "Run prompt workflow"))
-      ]
+    commandInfos = map mkCommand commands
+      where
+        mkCommand (name, cmd, desc) =
+          OA.command name (OA.info (pure cmd) (OA.progDesc desc))
+
+        commands =
+          [ ("version", CmdVersion, "Show version information")
+          , ("doctor", CmdDoctor, "Run diagnostics")
+          , ("rpc", CmdRpc, "Start RPC server")
+          , ("prompt", CmdPrompt, "Run prompt workflow")
+          ]
 
     logLevelReader :: OA.ReadM LogLevel
     logLevelReader = OA.eitherReader $ \s ->
@@ -93,8 +104,7 @@ cliParserInfo = OA.info (cliOptionsParser <**> OA.helper) OA.fullDesc
     defaultLogLevel = LogInfo
 
     defaultLogLevelName :: String
-    defaultLogLevelName =
-      fromMaybe "info" (fst <$> find ((== defaultLogLevel) . snd) logLevels)
+    defaultLogLevelName = "info"
 
     logLevels :: [(String, LogLevel)]
     logLevels =
