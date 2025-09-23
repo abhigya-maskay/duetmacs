@@ -28,7 +28,9 @@ runCli = do
   case OA.execParserPure prefsWithHelp cliParserInfo args of
     OA.Success cliOpts -> do
       formatter <- initShellFormatter cliOpts
-      mapM_ (runInstruction formatter) (planExecution cliOpts)
+      case planExecution cliOpts of
+        Just instr -> runInstruction formatter instr
+        Nothing -> return ()
     OA.Failure failure -> do
       let (msg, code) = OA.renderFailure failure progName
       formatter <- initShellFormatter (formatterOptions args)

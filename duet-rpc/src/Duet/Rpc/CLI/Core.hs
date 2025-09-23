@@ -40,11 +40,11 @@ data CliInstruction
   = InstrRunCommand CliCommand
   deriving (Eq, Show)
 
-planExecution :: CliOptions -> [CliInstruction]
+planExecution :: CliOptions -> Maybe CliInstruction
 planExecution cliOpts
-  | optShowVersion cliOpts = [InstrRunCommand CmdVersion]
-  | Just cmd <- optCommand cliOpts = [InstrRunCommand cmd]
-  | otherwise = []
+  | optShowVersion cliOpts = Just (InstrRunCommand CmdVersion)
+  | Just cmd <- optCommand cliOpts = Just (InstrRunCommand cmd)
+  | otherwise = Nothing
 
 noColorLongFlag :: String
 noColorLongFlag = "no-color"
@@ -56,7 +56,13 @@ prefsWithHelp :: OA.ParserPrefs
 prefsWithHelp = OA.prefs (OA.showHelpOnEmpty <> OA.showHelpOnError)
 
 cliParserInfo :: OA.ParserInfo CliOptions
-cliParserInfo = OA.info (cliOptionsParser <**> OA.helper) OA.fullDesc
+cliParserInfo =
+  OA.info
+    (cliOptionsParser <**> OA.helper)
+    ( OA.fullDesc
+        <> OA.header "duet-rpc [COMMAND] [OPTIONS]"
+        <> OA.footer "See 'duet-rpc <command> --help' for more information."
+    )
   where
     cliOptionsParser :: OA.Parser CliOptions
     cliOptionsParser = CliOptions <$> versionFlag <*> noColorFlag <*> logLevelOption <*> commandParser
