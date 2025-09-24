@@ -27,6 +27,7 @@ library
     import:           warnings, package-deps
     exposed-modules:  Duet.Rpc.CLI.Core
                       Duet.Rpc.CLI.Shell
+                      Duet.Rpc.Config.Loader
                       Duet.Rpc.Logger
                       Duet.Rpc.OutputFormatter.Core
                       Duet.Rpc.OutputFormatter.Shell
@@ -56,7 +57,16 @@ test-suite duet-rpc-test
     type:             exitcode-stdio-1.0
     main-is:          Main.hs
     hs-source-dirs:   test
-    build-depends:    duet-rpc,
+    other-modules:    Duet.Rpc.Test.CLI
+                      Duet.Rpc.Test.CLI.Assertions
+                      Duet.Rpc.Test.CLI.Errors
+                      Duet.Rpc.Test.CLI.Help
+                      Duet.Rpc.Test.CLI.Golden
+                      Duet.Rpc.Test.CLI.Harness
+                      Duet.Rpc.Test.CLI.NoColor
+                      Duet.Rpc.Test.CLI.Version
+    build-depends:    bytestring,
+                      duet-rpc,
                       tasty,
                       tasty-hunit,
                       tasty-golden,

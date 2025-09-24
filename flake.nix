@@ -26,6 +26,7 @@
           compiler
           hspkgs.cabal-install
           hspkgs.haskell-language-server
+          pkgs.time
         ];
       };
     });
