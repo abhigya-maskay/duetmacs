@@ -3,6 +3,7 @@ module Duet.Rpc.Test.CLI.Harness
   , CliResult (..)
   , defaultInvocation
   , runCli
+  , runCliViaScript
   , findDuetRpcExecutable
   , containsAnsi
   ) where
@@ -19,8 +20,10 @@ import qualified System.FilePath as FP
 import System.Environment (getEnvironment, lookupEnv)
 import System.Exit (ExitCode)
 import System.IO.Temp (withSystemTempDirectory)
+import System.Process (showCommandForUser)
 import System.Process.Typed
-  ( proc
+  ( ProcessConfig
+  , proc
   , readProcess
   , setEnv
   , setWorkingDir
@@ -28,6 +31,7 @@ import System.Process.Typed
 import System.Directory
   ( doesDirectoryExist
   , doesFileExist
+  , findExecutable
   , getCurrentDirectory
   , listDirectory
   )
@@ -48,20 +52,50 @@ data CliResult = CliResult
   }
 
 runCli :: CliInvocation -> IO CliResult
-runCli invocation = withSystemTempDirectory "duet-rpc-test" $ \tmpDir -> do
-  exe <- findDuetRpcExecutable
-  baseEnv <- getEnvironment
-  let process =
-        setWorkingDir tmpDir
-          . setEnv (mergeEnvs baseEnv (cliEnv invocation))
-          $ proc exe (cliArgs invocation)
-  (exitCode, outBytes, errBytes) <- readProcess process
-  pure
-    CliResult
-      { cliExitCode = exitCode
-      , cliStdout = TE.decodeUtf8 (BL.toStrict outBytes)
-      , cliStderr = TE.decodeUtf8 (BL.toStrict errBytes)
-      }
+runCli = runCliWith $ \exe invocation -> proc exe (cliArgs invocation)
+
+runCliViaScript :: CliInvocation -> IO (Either Text CliResult)
+runCliViaScript invocation = do
+  support <- scriptSupport
+  case support of
+    Left reason -> pure (Left reason)
+    Right scriptPath ->
+      Right <$> runCliWith (scriptProcess scriptPath) invocation
+
+runCliWith :: (FilePath -> CliInvocation -> ProcessConfig () () ()) -> CliInvocation -> IO CliResult
+runCliWith mkProcess invocation =
+  withSystemTempDirectory "duet-rpc-test" $ \tmpDir -> do
+    exe <- findDuetRpcExecutable
+    baseEnv <- getEnvironment
+    let process =
+          setWorkingDir tmpDir
+            . setEnv (mergeEnvs baseEnv (cliEnv invocation))
+            $ mkProcess exe invocation
+    (exitCode, outBytes, errBytes) <- readProcess process
+    pure
+      CliResult
+        { cliExitCode = exitCode
+        , cliStdout = TE.decodeUtf8 (BL.toStrict outBytes)
+        , cliStderr = TE.decodeUtf8 (BL.toStrict errBytes)
+        }
+
+scriptProcess :: FilePath -> FilePath -> CliInvocation -> ProcessConfig () () ()
+scriptProcess scriptPath exe invocation =
+  proc scriptPath
+    [ "-q"
+    , "-c"
+    , showCommandForUser exe (cliArgs invocation)
+    , "/dev/null"
+    ]
+
+scriptSupport :: IO (Either Text FilePath)
+scriptSupport
+  | os == "mingw32" = pure (Left "TTY emulation not supported on Windows")
+  | otherwise = do
+      found <- findExecutable "script"
+      case found of
+        Nothing -> pure (Left "`script` command not available")
+        Just path -> pure (Right path)
 
 mergeEnvs :: [(String, String)] -> Map String String -> [(String, String)]
 mergeEnvs base overrides = Map.toList (Map.union overrides (Map.fromList base))

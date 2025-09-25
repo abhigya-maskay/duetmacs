@@ -64,6 +64,7 @@ test-suite duet-rpc-test
                       Duet.Rpc.Test.CLI.Golden
                       Duet.Rpc.Test.CLI.Harness
                       Duet.Rpc.Test.CLI.NoColor
+                      Duet.Rpc.Test.CLI.TTY
                       Duet.Rpc.Test.CLI.Version
     build-depends:    bytestring,
                       duet-rpc,
@@ -71,7 +72,8 @@ test-suite duet-rpc-test
                       tasty-hunit,
                       tasty-golden,
                       typed-process,
-                      temporary
+                      temporary,
+                      process
     default-language: Haskell2010
     default-extensions: StrictData
                         OverloadedStrings

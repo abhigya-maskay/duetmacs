@@ -9,6 +9,7 @@ import qualified Duet.Rpc.Test.CLI.Help as Help
 import qualified Duet.Rpc.Test.CLI.NoColor as NoColor
 import qualified Duet.Rpc.Test.CLI.Errors as Errors
 import qualified Duet.Rpc.Test.CLI.Version as Version
+import qualified Duet.Rpc.Test.CLI.TTY as TTY
 
 tests :: TestTree
 tests =
@@ -19,4 +20,5 @@ tests =
     , Errors.tests
     , Golden.tests
     , NoColor.tests
+    , TTY.tests
     ]
