@@ -9,15 +9,15 @@ module Duet.Rpc.Logger
   , logError
   ) where
 
-import Control.Exception (bracket, tryJust, displayException)
-import Control.Monad (guard, void)
+import Control.Exception (bracket, displayException)
+import Control.Monad (void)
 import qualified Data.Text as T
 import Duet.Rpc.CLI.Core (LogLevel (..), logLevelSeverity)
 import qualified Katip as K
 import Katip.Scribes.Handle (mkHandleScribe, ColorStrategy(..))
 import System.Environment (lookupEnv)
 import System.IO (stderr, openFile, IOMode(..), hPutStrLn)
-import System.IO.Error (isPermissionError, isDoesNotExistError)
+import System.IO.Error (tryIOError)
 
 newtype LogEnv = LogEnv K.LogEnv
 
@@ -36,21 +36,18 @@ initLogger level = do
       register "stderr" stderrScribe logEnv
 
     Just logPath -> do
-      result <- tryJust isFileError (openFile logPath AppendMode)
+      result <- tryIOError (openFile logPath AppendMode)
       case result of
         Right handle -> do
           fileScribe <- mkHandleScribe (ColorLog False) handle permit K.V2
           register "file" fileScribe logEnv
 
         Left err -> do
-          hPutStrLn stderr $ "Warning: Cannot write to log file '" ++ logPath ++ "': " ++ err ++ ". Using stderr instead."
+          hPutStrLn stderr $ "Warning: Cannot write to log file '" ++ logPath ++ "': " ++ displayException err ++ ". Using stderr instead."
           stderrScribe <- mkHandleScribe ColorIfTerminal stderr permit K.V2
           register "stderr" stderrScribe logEnv
 
   pure $ LogEnv logEnv'
-  where
-    isFileError :: IOError -> Maybe String
-    isFileError e = guard (isPermissionError e || isDoesNotExistError e) >> pure (displayException e)
 
 closeLogger :: LogEnv -> IO ()
 closeLogger (LogEnv env) = void $ K.closeScribes env
