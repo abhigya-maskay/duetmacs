@@ -2,6 +2,9 @@ module Duet.Rpc.OutputFormatter.Core
   ( ColorMode (..)
   , FormatterSettings (..)
   , OutputFormatter (..)
+  , HandleProfile (..)
+  , TerminalProfile (..)
+  , resolveFormatterSettings
   , mkOutputFormatter
   ) where
 
@@ -15,6 +18,8 @@ import System.Console.ANSI
   , SGR (Reset, SetColor, SetConsoleIntensity)
   , setSGRCode
   )
+
+import Duet.Rpc.CLI.Core (CliOptions (..))
 
 data ColorMode
   = ColorEnabled
@@ -31,6 +36,32 @@ data OutputFormatter = OutputFormatter
   { formatStdout :: Text -> Text
   , formatStderr :: Text -> Text
   }
+
+data HandleProfile = HandleProfile
+  { handleIsTTY :: Bool
+  , handleSupportsAnsi :: Bool
+  }
+
+data TerminalProfile = TerminalProfile
+  { stdoutProfile :: HandleProfile
+  , stderrProfile :: HandleProfile
+  , envNoColorEnabled :: Bool
+  }
+
+resolveFormatterSettings :: CliOptions -> TerminalProfile -> FormatterSettings
+resolveFormatterSettings cliOpts terminal =
+  FormatterSettings
+    { stdoutColorMode = resolve (stdoutProfile terminal)
+    , stderrColorMode = resolve (stderrProfile terminal)
+    }
+  where
+    resolve :: HandleProfile -> ColorMode
+    resolve handleProfile
+      | optNoColor cliOpts
+          || envNoColorEnabled terminal
+          || not (handleIsTTY handleProfile)
+          || not (handleSupportsAnsi handleProfile) = ColorDisabled
+      | otherwise = ColorEnabled
 
 mkOutputFormatter :: FormatterSettings -> OutputFormatter
 mkOutputFormatter settings =

@@ -1,8 +1,5 @@
 module Duet.Rpc.OutputFormatter.Shell
   ( ShellFormatter (..)
-  , HandleProfile (..)
-  , TerminalProfile (..)
-  , buildShellFormatter
   , initShellFormatter
   ) where
 
@@ -16,10 +13,12 @@ import System.Console.ANSI (hSupportsANSI)
 
 import Duet.Rpc.CLI.Core (CliOptions (..))
 import Duet.Rpc.OutputFormatter.Core
-  ( ColorMode (..)
-  , FormatterSettings (..)
+  ( FormatterSettings (..)
+  , HandleProfile (..)
   , OutputFormatter (..)
+  , TerminalProfile (..)
   , mkOutputFormatter
+  , resolveFormatterSettings
   )
 
 data ShellFormatter = ShellFormatter
@@ -27,39 +26,19 @@ data ShellFormatter = ShellFormatter
   , writeStderr :: Text -> IO ()
   }
 
-data HandleProfile = HandleProfile
-  { handleIsTTY :: Bool
-  , handleSupportsAnsi :: Bool
-  }
-
-data TerminalProfile = TerminalProfile
-  { stdoutProfile :: HandleProfile
-  , stderrProfile :: HandleProfile
-  , envNoColorEnabled :: Bool
-  }
-
-buildShellFormatter :: TerminalProfile -> CliOptions -> ShellFormatter
-buildShellFormatter terminal cliOpts =
+mkShellFormatter :: TerminalProfile -> CliOptions -> ShellFormatter
+mkShellFormatter terminal cliOpts =
   let
-    formatter =
-      mkOutputFormatter
-        FormatterSettings
-          { stdoutColorMode = resolve (stdoutProfile terminal)
-          , stderrColorMode = resolve (stderrProfile terminal)
-          }
+    settings :: FormatterSettings
+    settings = resolveFormatterSettings cliOpts terminal
+
+    formatter :: OutputFormatter
+    formatter = mkOutputFormatter settings
   in
     ShellFormatter
       { writeStdout = TIO.putStr . formatStdout formatter
       , writeStderr = TIO.hPutStr stderr . formatStderr formatter
       }
-  where
-    resolve :: HandleProfile -> ColorMode
-    resolve handleProfile
-      | optNoColor cliOpts
-          || envNoColorEnabled terminal
-          || not (handleIsTTY handleProfile)
-          || not (handleSupportsAnsi handleProfile) = ColorDisabled
-      | otherwise = ColorEnabled
 
 initShellFormatter :: CliOptions -> IO ShellFormatter
 initShellFormatter cliOpts = do
@@ -76,4 +55,4 @@ initShellFormatter cliOpts = do
           , envNoColorEnabled = isJust envNoColor
           }
 
-  pure (buildShellFormatter terminal cliOpts)
+  pure (mkShellFormatter terminal cliOpts)

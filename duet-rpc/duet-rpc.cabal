@@ -66,6 +66,11 @@ test-suite duet-rpc-test
                       Duet.Rpc.Test.CLI.NoColor
                       Duet.Rpc.Test.CLI.TTY
                       Duet.Rpc.Test.CLI.Version
+                      Duet.Rpc.Test.Unit
+                      Duet.Rpc.Test.Unit.ErrorHandler
+                      Duet.Rpc.Test.Unit.OutputFormatter
+                      Duet.Rpc.Test.Unit.VersionManager
+                      Paths_duet_rpc
     build-depends:    bytestring,
                       duet-rpc,
                       tasty,
