@@ -9,7 +9,6 @@ module Duet.Rpc.CLI.Core
   , commandDescriptions
   , commandActionOf
   , planExecution
-  , parseCli
   , defaultCliOptions
   , LogLevelInfo (..)
   , logLevelInfos
@@ -113,9 +112,6 @@ commandDescriptions = map toPair commandInfos
 
 commandActionOf :: CliCommand -> Maybe CommandAction
 commandActionOf cmd = Map.lookup cmd (registryActions cliCommands)
-
-parseCli :: IO CliOptions
-parseCli = OA.customExecParser prefsWithHelp cliParserInfo
 
 defaultCliOptions :: CliOptions
 defaultCliOptions =

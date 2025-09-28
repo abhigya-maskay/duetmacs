@@ -3,14 +3,17 @@ module Duet.Rpc.CLI.Shell (runCli) where
 
 import qualified Data.Text as T
 
+import qualified Options.Applicative as OA
+
 import Duet.Rpc.CLI.Core
   ( CliCommand (..)
   , CliInstruction (..)
   , CliOptions (..)
   , CommandAction (..)
+  , cliParserInfo
   , commandActionOf
   , planExecution
-  , parseCli
+  , prefsWithHelp
   )
 import Duet.Rpc.Logger (logDebug, withLogger)
 import Duet.Rpc.OutputFormatter.Shell (ShellFormatter (..), initShellFormatter)
@@ -18,7 +21,7 @@ import Duet.Rpc.VersionManager (renderVersion)
 
 runCli :: IO ()
 runCli = do
-  cliOpts <- parseCli
+  cliOpts <- OA.customExecParser prefsWithHelp cliParserInfo
   withLogger (optLogLevel cliOpts) $ \logEnv -> do
     logDebug logEnv "duet-rpc CLI startup"
     formatter <- initShellFormatter cliOpts
