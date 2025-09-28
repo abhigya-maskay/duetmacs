@@ -10,5 +10,5 @@ Prefer modular code and separation of concerns.
 - Group imports by origin with blank lines and qualify shared namespaces (e.g. `OA`, `T`, `K`) to avoid ambiguity (`duet-rpc/src/Duet/Rpc/CLI/Shell.hs`).
 - Prefer `Text` for user-facing IO and logging, only converting to `String` at boundaries (`duet-rpc/src/Duet/Rpc/OutputFormatter/Core.hs`, `duet-rpc/src/Duet/Rpc/Logger.hs`).
 - Extend the CLI via the existing registry pattern—update `CliCommand`, `CommandAction`, `commandInfos`, and the dispatcher instead of branching ad hoc (`duet-rpc/src/Duet/Rpc/CLI/Core.hs`).
-- Send terminal output through `ShellFormatter` to honor color detection and newline handling (`duet-rpc/src/Duet/Rpc/OutputFormatter/Shell.hs`, `duet-rpc/src/Duet/Rpc/CLI/Shell.hs`).
+- Send terminal output through `ShellFormatter` to honor color detection and newline handling (`duet-rpc/src/Duet/Rpc/OutputFormatter/Shell.hs`, `duet-rpc/src/Duet/Rpc/CLI/Shell.hs`), except for `optparse-applicative`'s built-in parser failures.
 - Use `Duet.Rpc.Logger` helpers for Katip logging configuration instead of instantiating loggers inline (`duet-rpc/src/Duet/Rpc/Logger.hs`).
