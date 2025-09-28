@@ -8,7 +8,7 @@ module Duet.Rpc.Test.CLI.Harness
   , containsAnsi
   ) where
 
-import Control.Monad (filterM)
+import Control.Monad (filterM, when)
 import qualified Data.ByteString.Lazy as BL
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
@@ -18,7 +18,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified System.FilePath as FP
 import System.Environment (getEnvironment, lookupEnv)
-import System.Exit (ExitCode)
+import System.Exit (ExitCode (..))
 import System.IO.Temp (withSystemTempDirectory)
 import System.Process (showCommandForUser)
 import System.Process.Typed
@@ -40,10 +40,11 @@ import System.Info (os)
 data CliInvocation = CliInvocation
   { cliArgs :: [String]
   , cliEnv :: Map String String
+  , cliExpectSuccess :: Bool
   }
 
 defaultInvocation :: CliInvocation
-defaultInvocation = CliInvocation {cliArgs = [], cliEnv = Map.empty}
+defaultInvocation = CliInvocation {cliArgs = [], cliEnv = Map.empty, cliExpectSuccess = True}
 
 data CliResult = CliResult
   { cliExitCode :: ExitCode
@@ -72,12 +73,20 @@ runCliWith mkProcess invocation =
             . setEnv (mergeEnvs baseEnv (cliEnv invocation))
             $ mkProcess exe invocation
     (exitCode, outBytes, errBytes) <- readProcess process
+    when (cliExpectSuccess invocation && exitCode /= ExitSuccess) $
+      fail (renderFailureMessage exitCode)
     pure
       CliResult
         { cliExitCode = exitCode
         , cliStdout = TE.decodeUtf8 (BL.toStrict outBytes)
         , cliStderr = TE.decodeUtf8 (BL.toStrict errBytes)
         }
+  where
+    renderFailureMessage :: ExitCode -> String
+    renderFailureMessage code =
+      "Expected ExitSuccess but got " <> show code <> " for \""
+        <> unwords (cliArgs invocation)
+        <> "\""
 
 scriptProcess :: FilePath -> FilePath -> CliInvocation -> ProcessConfig () () ()
 scriptProcess scriptPath exe invocation =

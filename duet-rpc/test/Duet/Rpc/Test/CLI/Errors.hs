@@ -28,10 +28,11 @@ tests =
 
 unknownSubcommand :: Assertion
 unknownSubcommand = do
-  result <- runCli defaultInvocation {cliArgs = ["frobnicate"]}
+  result <- runCli defaultInvocation {cliArgs = ["frobnicate"], cliExpectSuccess = False}
   cliExitCode result @?= ExitFailure 1
   cliStdout result @?= ""
   assertContainsUsage result
+  assertNoStackTrace (cliStderr result)
 
 assertContainsUsage :: CliResult -> Assertion
 assertContainsUsage result =
@@ -39,7 +40,7 @@ assertContainsUsage result =
 
 unknownSubcommandNoColorViaTTY :: Assertion
 unknownSubcommandNoColorViaTTY = do
-  baseline <- runCliViaScript defaultInvocation {cliArgs = ["frobnicate"]}
+  baseline <- runCliViaScript defaultInvocation {cliArgs = ["frobnicate"], cliExpectSuccess = False}
   case baseline of
     Left reason ->
       assertBool (T.unpack ("Skipping TTY test: " <> reason)) True
@@ -49,6 +50,7 @@ unknownSubcommandNoColorViaTTY = do
           defaultInvocation
             { cliArgs = ["frobnicate"]
             , cliEnv = Map.singleton "NO_COLOR" "1"
+            , cliExpectSuccess = False
             }
       case envResult of
         Left reason ->
@@ -57,3 +59,16 @@ unknownSubcommandNoColorViaTTY = do
           let combined = cliStdout plain <> cliStderr plain
           containsAnsi combined @?= False
           assertTextContains combined "Usage:"
+          assertNoStackTrace (cliStderr plain)
+
+assertNoStackTrace :: T.Text -> Assertion
+assertNoStackTrace stderrText = mapM_ forbid disallowedMarkers
+  where
+    forbid :: T.Text -> Assertion
+    forbid marker =
+      assertBool
+        "CLI error output should not include stack traces"
+        (not (marker `T.isInfixOf` stderrText))
+
+    disallowedMarkers :: [T.Text]
+    disallowedMarkers = ["CallStack", "Exception:"]

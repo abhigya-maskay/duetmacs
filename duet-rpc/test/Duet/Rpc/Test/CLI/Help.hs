@@ -19,6 +19,7 @@ tests =
     "help"
     [ testCase "--help is available" helpFlagShowsSynopsis
     , testCase "no args displays help" noArgsShowsHelp
+    , testCase "-h short flag matches --help" helpShortFlagMatches
     ]
 
 helpFlagShowsSynopsis :: Assertion
@@ -33,3 +34,10 @@ noArgsShowsHelp = do
   emptyResult <- runCli defaultInvocation
   cliStdout emptyResult @?= cliStdout helpResult
   cliStderr emptyResult @?= ""
+
+helpShortFlagMatches :: Assertion
+helpShortFlagMatches = do
+  longResult <- runCli defaultInvocation {cliArgs = ["--help"]}
+  shortResult <- runCli defaultInvocation {cliArgs = ["-h"]}
+  cliStdout shortResult @?= cliStdout longResult
+  cliStderr shortResult @?= ""

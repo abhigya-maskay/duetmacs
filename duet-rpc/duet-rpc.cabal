@@ -63,6 +63,7 @@ test-suite duet-rpc-test
                       Duet.Rpc.Test.CLI.Help
                       Duet.Rpc.Test.CLI.Golden
                       Duet.Rpc.Test.CLI.Harness
+                      Duet.Rpc.Test.CLI.Logging
                       Duet.Rpc.Test.CLI.NoColor
                       Duet.Rpc.Test.CLI.TTY
                       Duet.Rpc.Test.CLI.Version
