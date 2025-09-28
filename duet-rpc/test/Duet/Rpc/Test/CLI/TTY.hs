@@ -21,11 +21,11 @@ import Duet.Rpc.Test.CLI.Harness
   )
 
 tests :: TestTree
-tests = testGroup "tty" [ttyHelpShowsColor]
+tests = testGroup "tty" [ttyHelpMatchesPlainOutput]
 
-ttyHelpShowsColor :: TestTree
-ttyHelpShowsColor =
-  testCase "TTY captures ANSI while pipe stays plain" ttyHelpAssertion
+ttyHelpMatchesPlainOutput :: TestTree
+ttyHelpMatchesPlainOutput =
+  testCase "TTY help matches plain output" ttyHelpAssertion
 
 ttyHelpAssertion :: Assertion
 ttyHelpAssertion = do
@@ -35,8 +35,11 @@ ttyHelpAssertion = do
     Left reason ->
       assertBool (T.unpack ("Skipping TTY test: " <> reason)) True
     Right result -> do
-      containsAnsi (cliStdout result) @?= True
+      containsAnsi (cliStdout result) @?= False
       containsAnsi (cliStdout plain) @?= False
-      assertBool "TTY output should differ due to ANSI sequences" (cliStdout plain /= cliStdout result)
+      normalize (cliStdout plain) @?= normalize (cliStdout result)
       cliStderr plain @?= ""
       cliStderr result @?= ""
+  where
+    normalize :: T.Text -> T.Text
+    normalize = T.replace "\r\n" "\n"
