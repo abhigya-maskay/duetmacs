@@ -18,18 +18,31 @@ import Duet.Rpc.Test.CLI.Harness
   )
 import Duet.Rpc.Test.CLI.Assertions (assertTextContains)
 
+usageErrorExitCode :: ExitCode
+usageErrorExitCode = ExitFailure 1
+
 tests :: TestTree
 tests =
   testGroup
     "errors"
     [ testCase "unknown subcommand returns usage on stderr" unknownSubcommand
+    , testCase "unknown flag returns usage on stderr" unknownFlag
     , testCase "TTY failure honors NO_COLOR" unknownSubcommandNoColorViaTTY
     ]
 
 unknownSubcommand :: Assertion
 unknownSubcommand = do
   result <- runCli defaultInvocation {cliArgs = ["frobnicate"], cliExpectSuccess = False}
-  cliExitCode result @?= ExitFailure 1
+  assertParserFailure result
+
+unknownFlag :: Assertion
+unknownFlag = do
+  result <- runCli defaultInvocation {cliArgs = ["--frobnicate"], cliExpectSuccess = False}
+  assertParserFailure result
+
+assertParserFailure :: CliResult -> Assertion
+assertParserFailure result = do
+  cliExitCode result @?= usageErrorExitCode
   cliStdout result @?= ""
   assertContainsUsage result
   assertNoStackTrace (cliStderr result)
