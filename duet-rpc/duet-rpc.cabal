@@ -1,0 +1,86 @@
+cabal-version:   3.14
+name:            duet-rpc
+version:         0.1.0
+synopsis:        Haskell backend providing the DuetMacs RPC core for AI-assisted development.
+description:     Implements the DuetMacs RPC CLI, orchestrating sessions, prompt assembly, and multi-provider AI integration for Emacs users.
+license:         MIT
+author:          Abhigya Maskay
+maintainer:      ave70011@gmail.com
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+common package-deps
+    build-depends:    base >=4.19.2.0 && <4.21,
+                      containers,
+                      optparse-applicative,
+                      text,
+                      ansi-terminal,
+                      katip,
+                      time,
+                      directory,
+                      filepath
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings, package-deps
+    exposed-modules:  Duet.Rpc.CLI.Core
+                      Duet.Rpc.CLI.Shell
+                      Duet.Rpc.Config.Loader
+                      Duet.Rpc.Logger
+                      Duet.Rpc.OutputFormatter.Core
+                      Duet.Rpc.OutputFormatter.Shell
+                      Duet.Rpc.VersionManager
+    other-modules:    Paths_duet_rpc
+    hs-source-dirs:   src
+    default-language: Haskell2010
+    default-extensions: StrictData
+                        OverloadedStrings
+                        NamedFieldPuns
+                        RecordWildCards
+
+executable duet-rpc
+    import:           warnings, package-deps
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    build-depends:    duet-rpc
+    default-language: Haskell2010
+    default-extensions: StrictData
+                        OverloadedStrings
+                        NamedFieldPuns
+                        RecordWildCards
+
+
+test-suite duet-rpc-test
+    import:           warnings, package-deps
+    type:             exitcode-stdio-1.0
+    main-is:          Main.hs
+    hs-source-dirs:   test
+    other-modules:    Duet.Rpc.Test.CLI
+                      Duet.Rpc.Test.CLI.Assertions
+                      Duet.Rpc.Test.CLI.Errors
+                      Duet.Rpc.Test.CLI.Help
+                      Duet.Rpc.Test.CLI.Golden
+                      Duet.Rpc.Test.CLI.Harness
+                      Duet.Rpc.Test.CLI.NoColor
+                      Duet.Rpc.Test.CLI.TTY
+                      Duet.Rpc.Test.CLI.Version
+                      Duet.Rpc.Test.Unit
+                      Duet.Rpc.Test.Unit.ErrorHandler
+                      Duet.Rpc.Test.Unit.OutputFormatter
+                      Duet.Rpc.Test.Unit.VersionManager
+                      Paths_duet_rpc
+    build-depends:    bytestring,
+                      duet-rpc,
+                      tasty,
+                      tasty-hunit,
+                      tasty-golden,
+                      typed-process,
+                      temporary,
+                      process
+    default-language: Haskell2010
+    default-extensions: StrictData
+                        OverloadedStrings
+                        NamedFieldPuns
+                        RecordWildCards

@@ -1,0 +1,17 @@
+duet-rpc [COMMAND] [OPTIONS]
+
+Usage: duet-rpc [-V|--version] [-n|--no-color] [--log-level LEVEL] [COMMAND]
+
+Available options:
+  -V,--version             Print version information
+  -n,--no-color            Disable colored output
+  --log-level LEVEL        Set log level (debug|info|warn|error) (default: warn)
+  -h,--help                Show this help text
+
+Available commands:
+  version                  Show version information
+  doctor                   Run diagnostics
+  rpc                      Start RPC server
+  prompt                   Run prompt workflow
+
+See 'duet-rpc <command> --help' for more information.
