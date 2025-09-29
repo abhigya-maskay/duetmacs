@@ -11,7 +11,7 @@ import Duet.Rpc.Test.CLI.Harness
   , defaultInvocation
   , runCli
   )
-import Duet.Rpc.Test.CLI.Assertions (assertTextContains)
+import Duet.Rpc.Test.CLI.Helpers (assertTextContains)
 
 tests :: TestTree
 tests =

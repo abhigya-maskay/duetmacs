@@ -16,7 +16,7 @@ import Duet.Rpc.Test.CLI.Harness
   , runCli
   , runCliViaScript
   )
-import Duet.Rpc.Test.CLI.Assertions (assertTextContains)
+import Duet.Rpc.Test.CLI.Helpers (assertTextContains)
 
 usageErrorExitCode :: ExitCode
 usageErrorExitCode = ExitFailure 1
