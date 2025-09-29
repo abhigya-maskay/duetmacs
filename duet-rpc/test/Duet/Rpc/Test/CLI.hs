@@ -11,12 +11,14 @@ import qualified Duet.Rpc.Test.CLI.NoColor as NoColor
 import qualified Duet.Rpc.Test.CLI.Errors as Errors
 import qualified Duet.Rpc.Test.CLI.Version as Version
 import qualified Duet.Rpc.Test.CLI.TTY as TTY
+import qualified Duet.Rpc.Test.CLI.Core as Core
 
 tests :: TestTree
 tests =
   testGroup
     "CLI"
-    [ Version.tests
+    [ Core.tests
+    , Version.tests
     , Help.tests
     , Errors.tests
     , Golden.tests

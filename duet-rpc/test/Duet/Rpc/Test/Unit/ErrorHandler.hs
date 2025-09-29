@@ -9,7 +9,8 @@ import System.Exit (ExitCode (..))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, assertFailure, testCase, (@?=))
 
-import Duet.Rpc.CLI.Core (CliOptions (..), cliParserInfo, prefsWithHelp)
+import Duet.Rpc.CLI.Core (CliOptions (..))
+import Duet.Rpc.Test.CLI.Helpers (parseCli)
 
 tests :: TestTree
 tests =
@@ -21,7 +22,7 @@ tests =
 
 unknownCommandIncludesHelpHint :: Assertion
 unknownCommandIncludesHelpHint =
-  case parseCliForTest ["frobnicate"] of
+  case parseCli ["frobnicate"] of
     Failure failure -> do
       let (message, exitCode) = OA.renderFailure failure "duet-rpc"
       exitCode @?= ExitFailure 1
@@ -35,9 +36,6 @@ unknownCommandIncludesHelpHint =
 
 successfulParseIsIntact :: Assertion
 successfulParseIsIntact =
-  case parseCliForTest ["version"] of
+  case parseCli ["version"] of
     Success CliOptions {} -> pure ()
     _ -> assertFailure "Expected parse success for known command"
-
-parseCliForTest :: [String] -> OA.ParserResult CliOptions
-parseCliForTest = OA.execParserPure prefsWithHelp cliParserInfo

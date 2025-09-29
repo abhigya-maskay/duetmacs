@@ -58,7 +58,8 @@ test-suite duet-rpc-test
     main-is:          Main.hs
     hs-source-dirs:   test
     other-modules:    Duet.Rpc.Test.CLI
-                      Duet.Rpc.Test.CLI.Assertions
+                      Duet.Rpc.Test.CLI.Core
+                      Duet.Rpc.Test.CLI.Helpers
                       Duet.Rpc.Test.CLI.Errors
                       Duet.Rpc.Test.CLI.Help
                       Duet.Rpc.Test.CLI.Golden

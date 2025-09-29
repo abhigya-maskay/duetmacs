@@ -29,7 +29,7 @@ import Duet.Rpc.Test.CLI.Harness
   , defaultInvocation
   , runCli
   )
-import Duet.Rpc.Test.CLI.Assertions (assertTextContains)
+import Duet.Rpc.Test.CLI.Helpers (assertTextContains)
 import Duet.Rpc.VersionManager (renderVersion)
 
 tests :: TestTree
