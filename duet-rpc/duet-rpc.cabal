@@ -10,7 +10,7 @@ build-type:      Simple
 extra-doc-files: CHANGELOG.md
 
 common package-deps
-    build-depends:    base >=4.19.2.0 && <4.21,
+    build-depends:    base >=4.19.2.0 && <4.22,
                       containers,
                       optparse-applicative,
                       text,
