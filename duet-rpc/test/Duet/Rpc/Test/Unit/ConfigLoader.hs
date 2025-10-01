@@ -61,9 +61,6 @@ defaultConfigMatchesStorySkeleton = do
   configSource defaultConfig @?= SourceDefault
   logLevelOverride defaultConfig @?= Nothing
 
-temporaryFailingTest :: Assertion
-temporaryFailingTest = True @?= False
-
 tests :: TestTree
 tests =
   testGroup
@@ -72,5 +69,4 @@ tests =
     , testCase "searchPaths matches documented precedence" searchPathsMatchDocumentedPrecedence
     , testCase "config skeleton string constants are stable" configSkeletonStringConstantsAreStable
     , testCase "defaultConfig matches Story 001 skeleton" defaultConfigMatchesStorySkeleton
-    , testCase "TEMPORARY: This test should fail" temporaryFailingTest
     ]
