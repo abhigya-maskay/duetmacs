@@ -20,3 +20,7 @@ jobs:
       - name: Build project
         working-directory: duet-rpc
         run: cabal build --enable-tests
+
+      - name: Run tests
+        working-directory: duet-rpc
+        run: cabal test
