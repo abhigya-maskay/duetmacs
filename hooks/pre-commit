@@ -1,0 +1,11 @@
+#!/bin/sh
+
+echo "Running hlint on duet-rpc..."
+hlint duet-rpc
+
+if [ $? -ne 0 ]; then
+    echo "hlint found issues. Please fix them before committing."
+    exit 1
+fi
+
+exit 0

@@ -30,6 +30,14 @@
           hspkgs.ormolu
           pkgs.time
         ];
+
+        shellHook = ''
+          if [ -f hooks/pre-commit ] && [ ! -f .git/hooks/pre-commit ]; then
+            echo "Installing git hooks..."
+            cp hooks/pre-commit .git/hooks/pre-commit
+            chmod +x .git/hooks/pre-commit
+          fi
+        '';
       };
     });
   };
