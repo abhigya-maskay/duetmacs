@@ -1,6 +1,5 @@
 module Duet.Rpc.CLI.Core
   ( CliOptions (..)
-  , CliInstruction (..)
   , LogLevel (..)
   , CliCommand (..)
   , CommandAction (..)
@@ -47,10 +46,6 @@ data CliOptions = CliOptions
   , optLogLevel :: LogLevel
   , optCommand :: Maybe CliCommand
   }
-  deriving (Eq, Show)
-
-data CliInstruction
-  = InstrRunCommand CliCommand
   deriving (Eq, Show)
 
 data CommandAction
@@ -132,10 +127,10 @@ fromCommandInfos infos =
     toPair CommandInfo {commandValue, commandAction} = (commandValue, commandAction)
 
 
-planExecution :: CliOptions -> Maybe CliInstruction
+planExecution :: CliOptions -> Maybe CliCommand
 planExecution CliOptions {..}
-  | optShowVersion = Just (InstrRunCommand CmdVersion)
-  | Just cmd <- optCommand = Just (InstrRunCommand cmd)
+  | optShowVersion = Just CmdVersion
+  | Just cmd <- optCommand = Just cmd
   | otherwise = Nothing
 
 noColorLongFlag :: String

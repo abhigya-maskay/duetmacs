@@ -27,7 +27,7 @@ initLogger level = do
   let severity = logLevelSeverity level
   let permit = K.permitItem severity
 
-  let register name scribe env = K.registerScribe name scribe K.defaultScribeSettings env
+  let register name scribe = K.registerScribe name scribe K.defaultScribeSettings
 
   maybeLogPath <- lookupEnv "DUET_RPC_LOG"
   logEnv' <- case maybeLogPath of
@@ -53,7 +53,7 @@ closeLogger :: LogEnv -> IO ()
 closeLogger (LogEnv env) = void $ K.closeScribes env
 
 withLogger :: LogLevel -> (LogEnv -> IO a) -> IO a
-withLogger level action = bracket (initLogger level) closeLogger action
+withLogger level = bracket (initLogger level) closeLogger
 
 logDebug :: LogEnv -> T.Text -> IO ()
 logDebug = logWith K.DebugS

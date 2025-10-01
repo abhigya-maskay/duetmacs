@@ -2,7 +2,7 @@ module Duet.Rpc.Test.CLI.Logging
   ( tests
   ) where
 
-import Control.Monad (forM_, when)
+import Control.Monad (forM_, unless, when)
 import Data.Char (isUpper)
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
@@ -159,7 +159,7 @@ validateStructuredPrefix line = do
   (_, restAfterNamespace) <- bracketSegment restAfterTimestamp "namespace"
   (levelText, _restAfterLevel) <- bracketSegment restAfterNamespace "level"
   when (T.null levelText) $ Left "empty level name"
-  when (not (startsWithUpper levelText)) $ Left "level must start with uppercase"
+  unless (startsWithUpper levelText) $ Left "level must start with uppercase"
   Right ()
 
 parseTimestamp :: T.Text -> Either String ()
