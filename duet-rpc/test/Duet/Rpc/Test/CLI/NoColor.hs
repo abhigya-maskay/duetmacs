@@ -1,25 +1,25 @@
 module Duet.Rpc.Test.CLI.NoColor
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
 import qualified Data.Map.Strict as Map
+import Duet.Rpc.Test.CLI.Harness
+  ( CliInvocation (..),
+    CliResult (..),
+    containsAnsi,
+    defaultInvocation,
+    runCli,
+  )
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
-
-import Duet.Rpc.Test.CLI.Harness
-  ( CliInvocation (..)
-  , CliResult (..)
-  , containsAnsi
-  , defaultInvocation
-  , runCli
-  )
 
 tests :: TestTree
 tests =
   testGroup
     "color"
-    [ noColorEnvDisablesAnsi
-    , noColorFlagDisablesAnsi
+    [ noColorEnvDisablesAnsi,
+      noColorFlagDisablesAnsi
     ]
 
 noColorEnvDisablesAnsi :: TestTree
@@ -28,8 +28,8 @@ noColorEnvDisablesAnsi =
     result <-
       runCli
         defaultInvocation
-          { cliArgs = ["--help"]
-          , cliEnv = Map.singleton "NO_COLOR" "1"
+          { cliArgs = ["--help"],
+            cliEnv = Map.singleton "NO_COLOR" "1"
           }
     containsAnsi (cliStdout result) @?= False
 

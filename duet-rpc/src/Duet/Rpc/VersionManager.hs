@@ -1,6 +1,7 @@
 module Duet.Rpc.VersionManager
-  ( renderVersion
-  ) where
+  ( renderVersion,
+  )
+where
 
 import qualified Data.Text as T
 import Data.Version (showVersion)

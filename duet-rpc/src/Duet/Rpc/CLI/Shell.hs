@@ -1,23 +1,20 @@
-
 module Duet.Rpc.CLI.Shell (runCli) where
 
 import Data.Foldable (for_)
 import qualified Data.Text as T
-
-import qualified Options.Applicative as OA
-
 import Duet.Rpc.CLI.Core
-  ( CliCommand (..)
-  , CliOptions (..)
-  , CommandAction (..)
-  , cliParserInfo
-  , commandActionOf
-  , planExecution
-  , prefsWithHelp
+  ( CliCommand (..),
+    CliOptions (..),
+    CommandAction (..),
+    cliParserInfo,
+    commandActionOf,
+    planExecution,
+    prefsWithHelp,
   )
 import Duet.Rpc.Logger (logDebug, withLogger)
 import Duet.Rpc.OutputFormatter.Shell (ShellFormatter (..), initShellFormatter)
 import Duet.Rpc.VersionManager (renderVersion)
+import qualified Options.Applicative as OA
 
 runCli :: IO ()
 runCli = do

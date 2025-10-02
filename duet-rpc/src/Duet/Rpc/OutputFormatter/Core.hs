@@ -1,25 +1,25 @@
 module Duet.Rpc.OutputFormatter.Core
-  ( ColorMode (..)
-  , FormatterSettings (..)
-  , OutputFormatter (..)
-  , HandleProfile (..)
-  , TerminalProfile (..)
-  , resolveFormatterSettings
-  , mkOutputFormatter
-  ) where
+  ( ColorMode (..),
+    FormatterSettings (..),
+    OutputFormatter (..),
+    HandleProfile (..),
+    TerminalProfile (..),
+    resolveFormatterSettings,
+    mkOutputFormatter,
+  )
+where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import System.Console.ANSI
-  ( Color (White)
-  , ColorIntensity (Vivid)
-  , ConsoleIntensity (BoldIntensity)
-  , ConsoleLayer (Foreground)
-  , SGR (Reset, SetColor, SetConsoleIntensity)
-  , setSGRCode
-  )
-
 import Duet.Rpc.CLI.Core (CliOptions (..))
+import System.Console.ANSI
+  ( Color (White),
+    ColorIntensity (Vivid),
+    ConsoleIntensity (BoldIntensity),
+    ConsoleLayer (Foreground),
+    SGR (Reset, SetColor, SetConsoleIntensity),
+    setSGRCode,
+  )
 
 data ColorMode
   = ColorEnabled
@@ -27,32 +27,32 @@ data ColorMode
   deriving (Eq, Show)
 
 data FormatterSettings = FormatterSettings
-  { stdoutColorMode :: ColorMode
-  , stderrColorMode :: ColorMode
+  { stdoutColorMode :: ColorMode,
+    stderrColorMode :: ColorMode
   }
   deriving (Eq, Show)
 
 data OutputFormatter = OutputFormatter
-  { formatStdout :: Text -> Text
-  , formatStderr :: Text -> Text
+  { formatStdout :: Text -> Text,
+    formatStderr :: Text -> Text
   }
 
 data HandleProfile = HandleProfile
-  { handleIsTTY :: Bool
-  , handleSupportsAnsi :: Bool
+  { handleIsTTY :: Bool,
+    handleSupportsAnsi :: Bool
   }
 
 data TerminalProfile = TerminalProfile
-  { stdoutProfile :: HandleProfile
-  , stderrProfile :: HandleProfile
-  , envNoColorEnabled :: Bool
+  { stdoutProfile :: HandleProfile,
+    stderrProfile :: HandleProfile,
+    envNoColorEnabled :: Bool
   }
 
 resolveFormatterSettings :: CliOptions -> TerminalProfile -> FormatterSettings
 resolveFormatterSettings cliOpts terminal =
   FormatterSettings
-    { stdoutColorMode = resolve (stdoutProfile terminal)
-    , stderrColorMode = resolve (stderrProfile terminal)
+    { stdoutColorMode = resolve (stdoutProfile terminal),
+      stderrColorMode = resolve (stderrProfile terminal)
     }
   where
     resolve :: HandleProfile -> ColorMode
@@ -60,14 +60,15 @@ resolveFormatterSettings cliOpts terminal =
       | optNoColor cliOpts
           || envNoColorEnabled terminal
           || not (handleIsTTY handleProfile)
-          || not (handleSupportsAnsi handleProfile) = ColorDisabled
+          || not (handleSupportsAnsi handleProfile) =
+          ColorDisabled
       | otherwise = ColorEnabled
 
 mkOutputFormatter :: FormatterSettings -> OutputFormatter
 mkOutputFormatter settings =
   OutputFormatter
-    { formatStdout = formatWith (stdoutColorMode settings)
-    , formatStderr = formatWith (stderrColorMode settings)
+    { formatStdout = formatWith (stdoutColorMode settings),
+      formatStderr = formatWith (stderrColorMode settings)
     }
   where
     formatWith :: ColorMode -> Text -> Text

@@ -1,13 +1,14 @@
 module Duet.Rpc.Config.Loader
-  ( ConfigSource (..)
-  , Config (..)
-  , configEnvVar
-  , projectConfigFileName
-  , userConfigFilePath
-  , configSearchOrder
-  , searchPaths
-  , defaultConfig
-  ) where
+  ( ConfigSource (..),
+    Config (..),
+    configEnvVar,
+    projectConfigFileName,
+    userConfigFilePath,
+    configSearchOrder,
+    searchPaths,
+    defaultConfig,
+  )
+where
 
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
@@ -41,16 +42,16 @@ searchPaths = mapMaybe pathFor configSearchOrder
     pathFor _ = Nothing
 
 data Config = Config
-  { configPath :: Maybe FilePath
-  , configSource :: ConfigSource
-  , logLevelOverride :: Maybe LogLevel
+  { configPath :: Maybe FilePath,
+    configSource :: ConfigSource,
+    logLevelOverride :: Maybe LogLevel
   }
   deriving (Eq, Show)
 
 defaultConfig :: Config
 defaultConfig =
   Config
-    { configPath = Nothing
-    , configSource = SourceDefault
-    , logLevelOverride = Nothing
+    { configPath = Nothing,
+      configSource = SourceDefault,
+      logLevelOverride = Nothing
     }

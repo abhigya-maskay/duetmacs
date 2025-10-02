@@ -1,23 +1,24 @@
 module Duet.Rpc.CLI.Core
-  ( CliOptions (..)
-  , LogLevel (..)
-  , CliCommand (..)
-  , CommandAction (..)
-  , commandActions
-  , commandInfos
-  , commandDescriptions
-  , commandActionOf
-  , planExecution
-  , defaultCliOptions
-  , LogLevelInfo (..)
-  , logLevelInfos
-  , logLevelSeverity
-  , logLevelNames
-  , prefsWithHelp
-  , cliParserInfo
-  , noColorLongFlag
-  , noColorShortFlag
-  ) where
+  ( CliOptions (..),
+    LogLevel (..),
+    CliCommand (..),
+    CommandAction (..),
+    commandActions,
+    commandInfos,
+    commandDescriptions,
+    commandActionOf,
+    planExecution,
+    defaultCliOptions,
+    LogLevelInfo (..),
+    logLevelInfos,
+    logLevelSeverity,
+    logLevelNames,
+    prefsWithHelp,
+    cliParserInfo,
+    noColorLongFlag,
+    noColorShortFlag,
+  )
+where
 
 import Data.List (find, intercalate)
 import qualified Data.Map.Strict as Map
@@ -41,10 +42,10 @@ data CliCommand
   deriving (Eq, Ord, Show)
 
 data CliOptions = CliOptions
-  { optShowVersion :: Bool
-  , optNoColor :: Bool
-  , optLogLevel :: LogLevel
-  , optCommand :: Maybe CliCommand
+  { optShowVersion :: Bool,
+    optNoColor :: Bool,
+    optLogLevel :: LogLevel,
+    optCommand :: Maybe CliCommand
   }
   deriving (Eq, Show)
 
@@ -56,29 +57,29 @@ data CommandAction
   deriving (Eq, Show)
 
 data CommandInfo = CommandInfo
-  { commandName :: String
-  , commandValue :: CliCommand
-  , commandDesc :: String
-  , commandAction :: CommandAction
+  { commandName :: String,
+    commandValue :: CliCommand,
+    commandDesc :: String,
+    commandAction :: CommandAction
   }
 
 data CommandRegistry = CommandRegistry
-  { registryInfos :: [CommandInfo]
-  , registryActions :: Map.Map CliCommand CommandAction
+  { registryInfos :: [CommandInfo],
+    registryActions :: Map.Map CliCommand CommandAction
   }
 
 data LogLevelInfo = LogLevelInfo
-  { logLevelName :: String
-  , logLevelValue :: LogLevel
-  , logLevelKatipSeverity :: K.Severity
+  { logLevelName :: String,
+    logLevelValue :: LogLevel,
+    logLevelKatipSeverity :: K.Severity
   }
 
 logLevelInfos :: [LogLevelInfo]
 logLevelInfos =
-  [ LogLevelInfo "debug" LogDebug K.DebugS
-  , LogLevelInfo "info" LogInfo K.InfoS
-  , LogLevelInfo "warn" LogWarn K.WarningS
-  , LogLevelInfo "error" LogError K.ErrorS
+  [ LogLevelInfo "debug" LogDebug K.DebugS,
+    LogLevelInfo "info" LogInfo K.InfoS,
+    LogLevelInfo "warn" LogWarn K.WarningS,
+    LogLevelInfo "error" LogError K.ErrorS
   ]
 
 logLevelSeverity :: LogLevel -> K.Severity
@@ -91,10 +92,10 @@ cliCommands = fromCommandInfos commandInfos
 
 commandInfos :: [CommandInfo]
 commandInfos =
-  [ CommandInfo "version" CmdVersion "Show version information" CommandActionVersion
-  , CommandInfo "doctor" CmdDoctor "Run diagnostics" CommandActionDoctor
-  , CommandInfo "rpc" CmdRpc "Start RPC server" CommandActionRpc
-  , CommandInfo "prompt" CmdPrompt "Run prompt workflow" CommandActionPrompt
+  [ CommandInfo "version" CmdVersion "Show version information" CommandActionVersion,
+    CommandInfo "doctor" CmdDoctor "Run diagnostics" CommandActionDoctor,
+    CommandInfo "rpc" CmdRpc "Start RPC server" CommandActionRpc,
+    CommandInfo "prompt" CmdPrompt "Run prompt workflow" CommandActionPrompt
   ]
 
 commandActions :: [(CliCommand, CommandAction)]
@@ -111,21 +112,20 @@ commandActionOf cmd = Map.lookup cmd (registryActions cliCommands)
 defaultCliOptions :: CliOptions
 defaultCliOptions =
   CliOptions
-    { optShowVersion = False
-    , optNoColor = False
-    , optLogLevel = LogWarn
-    , optCommand = Nothing
+    { optShowVersion = False,
+      optNoColor = False,
+      optLogLevel = LogWarn,
+      optCommand = Nothing
     }
 
 fromCommandInfos :: [CommandInfo] -> CommandRegistry
 fromCommandInfos infos =
   CommandRegistry
-    { registryInfos = infos
-    , registryActions = Map.fromList (map toPair infos)
+    { registryInfos = infos,
+      registryActions = Map.fromList (map toPair infos)
     }
   where
     toPair CommandInfo {commandValue, commandAction} = (commandValue, commandAction)
-
 
 planExecution :: CliOptions -> Maybe CliCommand
 planExecution CliOptions {..}
@@ -166,7 +166,8 @@ buildCliParserInfo registry =
 
     logLevelOption :: OA.Parser LogLevel
     logLevelOption =
-      OA.option logLevelReader
+      OA.option
+        logLevelReader
         ( OA.long "log-level"
             <> OA.metavar "LEVEL"
             <> OA.value defaultLogLevel

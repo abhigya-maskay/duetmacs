@@ -1,38 +1,38 @@
 module Duet.Rpc.Test.Unit.ConfigLoader
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
 import Data.Foldable (traverse_)
 import Data.Text (Text)
 import qualified Data.Text as T
+import Duet.Rpc.Config.Loader
+  ( Config (..),
+    ConfigSource (..),
+    configEnvVar,
+    configSearchOrder,
+    defaultConfig,
+    projectConfigFileName,
+    searchPaths,
+    userConfigFilePath,
+  )
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, testCase, (@?=))
-
-import Duet.Rpc.Config.Loader
-  ( Config (..)
-  , ConfigSource (..)
-  , configEnvVar
-  , configSearchOrder
-  , defaultConfig
-  , projectConfigFileName
-  , searchPaths
-  , userConfigFilePath
-  )
 
 allConfigSources :: [ConfigSource]
 allConfigSources = [minBound .. maxBound]
 
 allPaths :: [(ConfigSource, FilePath)]
 allPaths =
-  [ (SourceProject, projectConfigFileName)
-  , (SourceUser, userConfigFilePath)
+  [ (SourceProject, projectConfigFileName),
+    (SourceUser, userConfigFilePath)
   ]
 
 allStringSettings :: [(Text, FilePath)]
 allStringSettings =
-  [ ("env var", T.unpack configEnvVar)
-  , ("project file", projectConfigFileName)
-  , ("user file", userConfigFilePath)
+  [ ("env var", T.unpack configEnvVar),
+    ("project file", projectConfigFileName),
+    ("user file", userConfigFilePath)
   ]
 
 configSearchOrderCoversEverySource :: Assertion
@@ -65,8 +65,8 @@ tests :: TestTree
 tests =
   testGroup
     "ConfigLoader"
-    [ testCase "configSearchOrder covers every source" configSearchOrderCoversEverySource
-    , testCase "searchPaths matches documented precedence" searchPathsMatchDocumentedPrecedence
-    , testCase "config skeleton string constants are stable" configSkeletonStringConstantsAreStable
-    , testCase "defaultConfig matches Story 001 skeleton" defaultConfigMatchesStorySkeleton
+    [ testCase "configSearchOrder covers every source" configSearchOrderCoversEverySource,
+      testCase "searchPaths matches documented precedence" searchPathsMatchDocumentedPrecedence,
+      testCase "config skeleton string constants are stable" configSkeletonStringConstantsAreStable,
+      testCase "defaultConfig matches Story 001 skeleton" defaultConfigMatchesStorySkeleton
     ]

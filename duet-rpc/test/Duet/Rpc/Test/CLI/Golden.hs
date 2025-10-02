@@ -1,20 +1,20 @@
 module Duet.Rpc.Test.CLI.Golden
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import Duet.Rpc.Test.CLI.Harness
+  ( CliInvocation (..),
+    CliResult (..),
+    defaultInvocation,
+    runCli,
+  )
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
-
-import Duet.Rpc.Test.CLI.Harness
-  ( CliInvocation (..)
-  , CliResult (..)
-  , defaultInvocation
-  , runCli
-  )
 
 tests :: TestTree
 tests =
@@ -38,6 +38,6 @@ renderHelp = do
   where
     invocation =
       defaultInvocation
-        { cliArgs = ["--help"]
-        , cliEnv = Map.singleton "NO_COLOR" "1"
+        { cliArgs = ["--help"],
+          cliEnv = Map.singleton "NO_COLOR" "1"
         }
