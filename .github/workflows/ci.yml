@@ -20,6 +20,9 @@ jobs:
       - name: Install HLint
         run: cabal install hlint
 
+      - name: Install Ormolu
+        run: cabal install ormolu
+
       - name: Build project
         working-directory: duet-rpc
         run: cabal build --enable-tests
@@ -30,3 +33,6 @@ jobs:
 
       - name: Run HLint
         run: hlint duet-rpc
+
+      - name: Run Ormolu format check
+        run: ormolu --mode check $(find duet-rpc/src duet-rpc/app -name '*.hs')
