@@ -17,6 +17,37 @@ jobs:
           ghc-version: '9.12.2'
           cabal-version: 'latest'
 
+      - name: Record dependency hash
+        id: dependency-hash
+        run: echo "hash=${{ hashFiles('**/*.cabal', '**/cabal.project.freeze') }}" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Cabal dependencies
+        uses: actions/cache@v4
+        id: cabal-cache
+        with:
+          path: ~/.cabal/store
+          key: ${{ runner.os }}-ghc-9.12-cabal-${{ hashFiles('**/*.cabal', '**/cabal.project.freeze') }}
+          restore-keys: |
+            ${{ runner.os }}-ghc-9.12-cabal-
+            ${{ runner.os }}-ghc-cabal-
+
+      - name: Validate cache restored
+        if: steps.cabal-cache.outputs.cache-hit == 'true'
+        continue-on-error: false
+        run: |
+          if [ -f "$HOME/.cabal/store/.manifest-hash" ]; then
+            CACHED_HASH=$(cat "$HOME/.cabal/store/.manifest-hash")
+            CURRENT_HASH="${{ steps.dependency-hash.outputs.hash }}"
+            if [ "$CACHED_HASH" != "$CURRENT_HASH" ]; then
+              echo "Cache hash mismatch! Cached: $CACHED_HASH, Current: $CURRENT_HASH"
+              exit 1
+            fi
+            echo "Cache validation passed"
+          else
+            echo "No manifest found in cache, skipping validation"
+            exit 1
+          fi
+
       - name: Install HLint
         run: cabal install hlint
 
@@ -26,6 +57,10 @@ jobs:
       - name: Build project
         working-directory: duet-rpc
         run: cabal build --enable-tests
+
+      - name: Persist dependency hash
+        if: success()
+        run: echo "${{ steps.dependency-hash.outputs.hash }}" > "$HOME/.cabal/store/.manifest-hash"
 
       - name: Run tests
         working-directory: duet-rpc
