@@ -29,7 +29,18 @@ jobs:
 
       - name: Run tests
         working-directory: duet-rpc
-        run: cabal test
+        shell: bash
+        run: |
+          set -euo pipefail
+          cabal test --test-option=--hide-successes | tee test-results.log
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: duet-rpc/test-results.log
+          retention-days: 7
 
       - name: Run HLint
         run: hlint duet-rpc
