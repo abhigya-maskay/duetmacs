@@ -1,35 +1,35 @@
 module Duet.Rpc.Test.Unit.OutputFormatter
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
 import Data.Text (Text)
 import qualified Data.Text as T
-import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (Assertion, assertBool, testCase, (@?=))
-
 import Duet.Rpc.CLI.Core (CliOptions (..), defaultCliOptions)
 import Duet.Rpc.OutputFormatter.Core
-  ( ColorMode (..)
-  , FormatterSettings (..)
-  , HandleProfile (..)
-  , OutputFormatter (..)
-  , TerminalProfile (..)
-  , mkOutputFormatter
-  , resolveFormatterSettings
+  ( ColorMode (..),
+    FormatterSettings (..),
+    HandleProfile (..),
+    OutputFormatter (..),
+    TerminalProfile (..),
+    mkOutputFormatter,
+    resolveFormatterSettings,
   )
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (Assertion, assertBool, testCase, (@?=))
 
 tests :: TestTree
 tests =
   testGroup
     "OutputFormatter"
-    [ testCase "enabled color wraps payload with ANSI and newline" colorEnabledWrapsAnsi
-    , testCase "disabled color strips existing ANSI sequences" colorDisabledStripsAnsi
-    , testCase "formatter always terminates output with newline" enforcesTrailingNewline
-    , testCase "--no-color overrides terminal capabilities" noColorFlagOverridesTerminal
-    , testCase "NO_COLOR environment disables color" envNoColorOverridesTerminal
-    , testCase "non-TTY stdout disables color" nonTtyDisablesColor
-    , testCase "lack of ANSI support disables color" ansiUnsupportedDisablesColor
-    , testCase "TTY with ANSI and defaults keeps color" ttyAnsiDefaultsEnableColor
+    [ testCase "enabled color wraps payload with ANSI and newline" colorEnabledWrapsAnsi,
+      testCase "disabled color strips existing ANSI sequences" colorDisabledStripsAnsi,
+      testCase "formatter always terminates output with newline" enforcesTrailingNewline,
+      testCase "--no-color overrides terminal capabilities" noColorFlagOverridesTerminal,
+      testCase "NO_COLOR environment disables color" envNoColorOverridesTerminal,
+      testCase "non-TTY stdout disables color" nonTtyDisablesColor,
+      testCase "lack of ANSI support disables color" ansiUnsupportedDisablesColor,
+      testCase "TTY with ANSI and defaults keeps color" ttyAnsiDefaultsEnableColor
     ]
 
 colorEnabledWrapsAnsi :: Assertion
@@ -106,9 +106,9 @@ formatter mode =
 ttyAnsiTerminal :: TerminalProfile
 ttyAnsiTerminal =
   TerminalProfile
-    { stdoutProfile = HandleProfile True True
-    , stderrProfile = HandleProfile True True
-    , envNoColorEnabled = False
+    { stdoutProfile = HandleProfile True True,
+      stderrProfile = HandleProfile True True,
+      envNoColorEnabled = False
     }
 
 containsAnsi :: Text -> Bool

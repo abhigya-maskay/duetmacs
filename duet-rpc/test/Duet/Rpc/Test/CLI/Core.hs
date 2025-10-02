@@ -1,29 +1,29 @@
 module Duet.Rpc.Test.CLI.Core
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
 import Data.Foldable (traverse_)
 import Data.Text (Text)
 import qualified Data.Text as T
+import Duet.Rpc.CLI.Core
+  ( CliCommand (..),
+    CliOptions (..),
+    CommandAction (..),
+    commandActionOf,
+    commandDescriptions,
+  )
+import Duet.Rpc.Test.CLI.Helpers (parseCli)
 import Options.Applicative (ParserResult (..))
 import qualified Options.Applicative as OA
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit
-  ( Assertion
-  , assertBool
-  , assertFailure
-  , testCase
-  , (@?=)
+  ( Assertion,
+    assertBool,
+    assertFailure,
+    testCase,
+    (@?=),
   )
-
-import Duet.Rpc.CLI.Core
-  ( CliCommand (..)
-  , CliOptions (..)
-  , CommandAction (..)
-  , commandActionOf
-  , commandDescriptions
-  )
-import Duet.Rpc.Test.CLI.Helpers (parseCli)
 
 headerLine :: Text
 headerLine = "duet-rpc [COMMAND] [OPTIONS]"
@@ -33,36 +33,36 @@ footerLine = "See 'duet-rpc <command> --help' for more information."
 
 expectedDescriptions :: [(CliCommand, String)]
 expectedDescriptions =
-  [ (CmdVersion, "Show version information")
-  , (CmdDoctor, "Run diagnostics")
-  , (CmdRpc, "Start RPC server")
-  , (CmdPrompt, "Run prompt workflow")
+  [ (CmdVersion, "Show version information"),
+    (CmdDoctor, "Run diagnostics"),
+    (CmdRpc, "Start RPC server"),
+    (CmdPrompt, "Run prompt workflow")
   ]
 
 expectedActions :: [(CliCommand, CommandAction)]
 expectedActions =
-  [ (CmdVersion, CommandActionVersion)
-  , (CmdDoctor, CommandActionDoctor)
-  , (CmdRpc, CommandActionRpc)
-  , (CmdPrompt, CommandActionPrompt)
+  [ (CmdVersion, CommandActionVersion),
+    (CmdDoctor, CommandActionDoctor),
+    (CmdRpc, CommandActionRpc),
+    (CmdPrompt, CommandActionPrompt)
   ]
 
 expectedInvocations :: [(String, CliCommand)]
 expectedInvocations =
-  [ ("version", CmdVersion)
-  , ("doctor", CmdDoctor)
-  , ("rpc", CmdRpc)
-  , ("prompt", CmdPrompt)
+  [ ("version", CmdVersion),
+    ("doctor", CmdDoctor),
+    ("rpc", CmdRpc),
+    ("prompt", CmdPrompt)
   ]
 
 tests :: TestTree
 tests =
   testGroup
     "Core"
-    [ testCase "commandInfos exposes all commands" commandRegistryCoverage
-    , testCase "commandActionOf resolves registry" commandActionsResolve
-    , testCase "parser recognizes subcommands" parserRecognizesSubcommands
-    , testCase "parser renders documented header/footer" parserHeaderFooterStable
+    [ testCase "commandInfos exposes all commands" commandRegistryCoverage,
+      testCase "commandActionOf resolves registry" commandActionsResolve,
+      testCase "parser recognizes subcommands" parserRecognizesSubcommands,
+      testCase "parser renders documented header/footer" parserHeaderFooterStable
     ]
 
 commandRegistryCoverage :: Assertion

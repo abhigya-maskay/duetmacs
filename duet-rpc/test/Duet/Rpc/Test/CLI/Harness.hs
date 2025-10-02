@@ -1,12 +1,13 @@
 module Duet.Rpc.Test.CLI.Harness
-  ( CliInvocation (..)
-  , CliResult (..)
-  , defaultInvocation
-  , runCli
-  , runCliViaScript
-  , findDuetRpcExecutable
-  , containsAnsi
-  ) where
+  ( CliInvocation (..),
+    CliResult (..),
+    defaultInvocation,
+    runCli,
+    runCliViaScript,
+    findDuetRpcExecutable,
+    containsAnsi,
+  )
+where
 
 import Control.Monad (filterM, when)
 import qualified Data.ByteString.Lazy as BL
@@ -16,40 +17,40 @@ import Data.Maybe (listToMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified System.FilePath as FP
+import System.Directory
+  ( doesDirectoryExist,
+    doesFileExist,
+    findExecutable,
+    getCurrentDirectory,
+    listDirectory,
+  )
 import System.Environment (getEnvironment, lookupEnv)
 import System.Exit (ExitCode (..))
+import qualified System.FilePath as FP
 import System.IO.Temp (withSystemTempDirectory)
+import System.Info (os)
 import System.Process (showCommandForUser)
 import System.Process.Typed
-  ( ProcessConfig
-  , proc
-  , readProcess
-  , setEnv
-  , setWorkingDir
+  ( ProcessConfig,
+    proc,
+    readProcess,
+    setEnv,
+    setWorkingDir,
   )
-import System.Directory
-  ( doesDirectoryExist
-  , doesFileExist
-  , findExecutable
-  , getCurrentDirectory
-  , listDirectory
-  )
-import System.Info (os)
 
 data CliInvocation = CliInvocation
-  { cliArgs :: [String]
-  , cliEnv :: Map String String
-  , cliExpectSuccess :: Bool
+  { cliArgs :: [String],
+    cliEnv :: Map String String,
+    cliExpectSuccess :: Bool
   }
 
 defaultInvocation :: CliInvocation
 defaultInvocation = CliInvocation {cliArgs = [], cliEnv = Map.empty, cliExpectSuccess = True}
 
 data CliResult = CliResult
-  { cliExitCode :: ExitCode
-  , cliStdout :: Text
-  , cliStderr :: Text
+  { cliExitCode :: ExitCode,
+    cliStdout :: Text,
+    cliStderr :: Text
   }
 
 runCli :: CliInvocation -> IO CliResult
@@ -77,24 +78,27 @@ runCliWith mkProcess invocation =
       fail (renderFailureMessage exitCode)
     pure
       CliResult
-        { cliExitCode = exitCode
-        , cliStdout = TE.decodeUtf8 (BL.toStrict outBytes)
-        , cliStderr = TE.decodeUtf8 (BL.toStrict errBytes)
+        { cliExitCode = exitCode,
+          cliStdout = TE.decodeUtf8 (BL.toStrict outBytes),
+          cliStderr = TE.decodeUtf8 (BL.toStrict errBytes)
         }
   where
     renderFailureMessage :: ExitCode -> String
     renderFailureMessage code =
-      "Expected ExitSuccess but got " <> show code <> " for \""
+      "Expected ExitSuccess but got "
+        <> show code
+        <> " for \""
         <> unwords (cliArgs invocation)
         <> "\""
 
 scriptProcess :: FilePath -> FilePath -> CliInvocation -> ProcessConfig () () ()
 scriptProcess scriptPath exe invocation =
-  proc scriptPath
-    [ "-q"
-    , "-c"
-    , showCommandForUser exe (cliArgs invocation)
-    , "/dev/null"
+  proc
+    scriptPath
+    [ "-q",
+      "-c",
+      showCommandForUser exe (cliArgs invocation),
+      "/dev/null"
     ]
 
 scriptSupport :: IO (Either Text FilePath)
@@ -134,13 +138,14 @@ discoverUnderNewstyle cwd = do
 
 candidatePaths :: [FilePath] -> [FilePath]
 candidatePaths pkgDirs =
-  [ pkgDir FP.</> "x"
+  [ pkgDir
+      FP.</> "x"
       FP.</> "duet-rpc"
       FP.</> "build"
       FP.</> "duet-rpc"
       FP.</> name
-  | pkgDir <- pkgDirs
-  , name <- targetNames
+  | pkgDir <- pkgDirs,
+    name <- targetNames
   ]
 
 existingSubdirs :: FilePath -> IO [FilePath]

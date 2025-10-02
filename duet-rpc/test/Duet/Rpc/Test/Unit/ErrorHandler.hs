@@ -1,23 +1,23 @@
 module Duet.Rpc.Test.Unit.ErrorHandler
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
 import qualified Data.Text as T
+import Duet.Rpc.CLI.Core (CliOptions (..))
+import Duet.Rpc.Test.CLI.Helpers (parseCli)
 import Options.Applicative (ParserResult (..))
 import qualified Options.Applicative as OA
 import System.Exit (ExitCode (..))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, assertFailure, testCase, (@?=))
 
-import Duet.Rpc.CLI.Core (CliOptions (..))
-import Duet.Rpc.Test.CLI.Helpers (parseCli)
-
 tests :: TestTree
 tests =
   testGroup
     "ErrorHandler"
-    [ testCase "unknown command instructs users how to get help" unknownCommandIncludesHelpHint
-    , testCase "successful parse does not raise failure" successfulParseIsIntact
+    [ testCase "unknown command instructs users how to get help" unknownCommandIncludesHelpHint,
+      testCase "successful parse does not raise failure" successfulParseIsIntact
     ]
 
 unknownCommandIncludesHelpHint :: Assertion

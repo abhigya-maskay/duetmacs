@@ -1,25 +1,25 @@
 module Duet.Rpc.Test.CLI.Version
-  ( tests
-  ) where
-
-import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (Assertion, testCase, (@?=))
+  ( tests,
+  )
+where
 
 import Duet.Rpc.Test.CLI.Harness
-  ( CliInvocation (..)
-  , CliResult (..)
-  , defaultInvocation
-  , runCli
+  ( CliInvocation (..),
+    CliResult (..),
+    defaultInvocation,
+    runCli,
   )
 import Duet.Rpc.VersionManager (renderVersion)
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (Assertion, testCase, (@?=))
 
 tests :: TestTree
 tests =
   testGroup
     "version"
-    [ testCase "--version prints semver" versionGlobalFlag
-    , testCase "version subcommand matches --version" versionSubcommandMatchesFlag
-    , testCase "-V short flag mirrors --version" versionShortFlagMatches
+    [ testCase "--version prints semver" versionGlobalFlag,
+      testCase "version subcommand matches --version" versionSubcommandMatchesFlag,
+      testCase "-V short flag mirrors --version" versionShortFlagMatches
     ]
 
 versionGlobalFlag :: Assertion

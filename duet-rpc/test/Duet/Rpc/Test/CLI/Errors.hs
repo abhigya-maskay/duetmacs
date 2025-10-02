@@ -1,22 +1,22 @@
 module Duet.Rpc.Test.CLI.Errors
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
-import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (Assertion, assertBool, testCase, (@?=))
-import System.Exit (ExitCode (..))
-
 import Duet.Rpc.Test.CLI.Harness
-  ( CliInvocation (..)
-  , CliResult (..)
-  , containsAnsi
-  , defaultInvocation
-  , runCli
-  , runCliViaScript
+  ( CliInvocation (..),
+    CliResult (..),
+    containsAnsi,
+    defaultInvocation,
+    runCli,
+    runCliViaScript,
   )
 import Duet.Rpc.Test.CLI.Helpers (assertTextContains)
+import System.Exit (ExitCode (..))
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (Assertion, assertBool, testCase, (@?=))
 
 usageErrorExitCode :: ExitCode
 usageErrorExitCode = ExitFailure 1
@@ -25,9 +25,9 @@ tests :: TestTree
 tests =
   testGroup
     "errors"
-    [ testCase "unknown subcommand returns usage on stderr" unknownSubcommand
-    , testCase "unknown flag returns usage on stderr" unknownFlag
-    , testCase "TTY failure honors NO_COLOR" unknownSubcommandNoColorViaTTY
+    [ testCase "unknown subcommand returns usage on stderr" unknownSubcommand,
+      testCase "unknown flag returns usage on stderr" unknownFlag,
+      testCase "TTY failure honors NO_COLOR" unknownSubcommandNoColorViaTTY
     ]
 
 unknownSubcommand :: Assertion
@@ -61,9 +61,9 @@ unknownSubcommandNoColorViaTTY = do
       envResult <-
         runCliViaScript
           defaultInvocation
-            { cliArgs = ["frobnicate"]
-            , cliEnv = Map.singleton "NO_COLOR" "1"
-            , cliExpectSuccess = False
+            { cliArgs = ["frobnicate"],
+              cliEnv = Map.singleton "NO_COLOR" "1",
+              cliExpectSuccess = False
             }
       case envResult of
         Left reason ->

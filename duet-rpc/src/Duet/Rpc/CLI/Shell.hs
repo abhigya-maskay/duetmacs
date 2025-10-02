@@ -1,23 +1,20 @@
-
 module Duet.Rpc.CLI.Shell (runCli) where
 
+import Data.Foldable (for_)
 import qualified Data.Text as T
-
-import qualified Options.Applicative as OA
-
 import Duet.Rpc.CLI.Core
-  ( CliCommand (..)
-  , CliInstruction (..)
-  , CliOptions (..)
-  , CommandAction (..)
-  , cliParserInfo
-  , commandActionOf
-  , planExecution
-  , prefsWithHelp
+  ( CliCommand (..),
+    CliOptions (..),
+    CommandAction (..),
+    cliParserInfo,
+    commandActionOf,
+    planExecution,
+    prefsWithHelp,
   )
 import Duet.Rpc.Logger (logDebug, withLogger)
 import Duet.Rpc.OutputFormatter.Shell (ShellFormatter (..), initShellFormatter)
 import Duet.Rpc.VersionManager (renderVersion)
+import qualified Options.Applicative as OA
 
 runCli :: IO ()
 runCli = do
@@ -25,13 +22,8 @@ runCli = do
   withLogger (optLogLevel cliOpts) $ \logEnv -> do
     logDebug logEnv "duet-rpc CLI startup"
     formatter <- initShellFormatter cliOpts
-    case planExecution cliOpts of
-      Just instr -> runInstruction formatter instr
-      Nothing -> pure ()
+    for_ (planExecution cliOpts) (dispatch formatter)
   where
-    runInstruction :: ShellFormatter -> CliInstruction -> IO ()
-    runInstruction fmt (InstrRunCommand cmd) = dispatch fmt cmd
-
     dispatch :: ShellFormatter -> CliCommand -> IO ()
     dispatch fmt cmd = maybe (pure ()) (`runAction` fmt) (commandActionOf cmd)
 

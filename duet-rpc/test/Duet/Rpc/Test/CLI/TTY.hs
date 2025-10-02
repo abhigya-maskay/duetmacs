@@ -1,24 +1,24 @@
 module Duet.Rpc.Test.CLI.TTY
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
 import Data.Char (isLetter)
 import qualified Data.Text as T
+import Duet.Rpc.Test.CLI.Harness
+  ( CliInvocation (..),
+    CliResult (..),
+    containsAnsi,
+    defaultInvocation,
+    runCli,
+    runCliViaScript,
+  )
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit
-  ( Assertion
-  , assertBool
-  , testCase
-  , (@?=)
-  )
-
-import Duet.Rpc.Test.CLI.Harness
-  ( CliInvocation (..)
-  , CliResult (..)
-  , containsAnsi
-  , defaultInvocation
-  , runCli
-  , runCliViaScript
+  ( Assertion,
+    assertBool,
+    testCase,
+    (@?=),
   )
 
 tests :: TestTree

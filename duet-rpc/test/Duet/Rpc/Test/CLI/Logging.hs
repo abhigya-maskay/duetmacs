@@ -1,8 +1,9 @@
 module Duet.Rpc.Test.CLI.Logging
-  ( tests
-  ) where
+  ( tests,
+  )
+where
 
-import Control.Monad (forM_, when)
+import Control.Monad (forM_, unless, when)
 import Data.Char (isUpper)
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
@@ -10,37 +11,36 @@ import qualified Data.Text.IO as TIO
 import Data.Time (LocalTime, UTCTime)
 import Data.Time.Format (defaultTimeLocale, parseTimeM)
 import Data.Time.Format.ISO8601 (iso8601ParseM)
+import Duet.Rpc.Test.CLI.Harness
+  ( CliInvocation (..),
+    CliResult (..),
+    containsAnsi,
+    defaultInvocation,
+    runCli,
+  )
+import Duet.Rpc.Test.CLI.Helpers (assertTextContains)
+import Duet.Rpc.VersionManager (renderVersion)
 import System.Exit (ExitCode (ExitSuccess))
 import System.IO (hClose)
 import System.IO.Temp (withSystemTempFile)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit
-  ( Assertion
-  , assertBool
-  , assertFailure
-  , testCase
-  , (@?=)
+  ( Assertion,
+    assertBool,
+    assertFailure,
+    testCase,
+    (@?=),
   )
-
-import Duet.Rpc.Test.CLI.Harness
-  ( CliInvocation (..)
-  , CliResult (..)
-  , containsAnsi
-  , defaultInvocation
-  , runCli
-  )
-import Duet.Rpc.Test.CLI.Helpers (assertTextContains)
-import Duet.Rpc.VersionManager (renderVersion)
 
 tests :: TestTree
 tests =
   testGroup
     "logging"
-    [ testCase "--log-level debug outputs structured logs to stderr" debugLoggingToStderr
-    , testCase "default log level suppresses debug output" defaultLogLevelSuppressesDebug
-    , testCase "warnings surface without opting into debug" warningVisibleAtDefaultLevel
-    , testCase "DUET_RPC_LOG routes logs to file" logFileRouting
-    , testCase "invalid DUET_RPC_LOG falls back to stderr with warning" invalidLogPathFallback
+    [ testCase "--log-level debug outputs structured logs to stderr" debugLoggingToStderr,
+      testCase "default log level suppresses debug output" defaultLogLevelSuppressesDebug,
+      testCase "warnings surface without opting into debug" warningVisibleAtDefaultLevel,
+      testCase "DUET_RPC_LOG routes logs to file" logFileRouting,
+      testCase "invalid DUET_RPC_LOG falls back to stderr with warning" invalidLogPathFallback
     ]
 
 debugLoggingToStderr :: Assertion
@@ -76,20 +76,22 @@ warningVisibleAtDefaultLevel = do
   assertTextContains stderrText "/nonexistent/x/y.log"
   T.isInfixOf "[Debug]" stderrText @?= False
   where
-    invocation = defaultInvocation
-      { cliArgs = ["version"]
-      , cliEnv = Map.singleton "DUET_RPC_LOG" "/nonexistent/x/y.log"
-      }
+    invocation =
+      defaultInvocation
+        { cliArgs = ["version"],
+          cliEnv = Map.singleton "DUET_RPC_LOG" "/nonexistent/x/y.log"
+        }
 
 logFileRouting :: Assertion
 logFileRouting = do
   withSystemTempFile "duet-test.log" $ \logPath logHandle -> do
     hClose logHandle
 
-    let invocation = defaultInvocation
-          { cliArgs = ["--log-level", "debug", "version"]
-          , cliEnv = Map.singleton "DUET_RPC_LOG" logPath
-          }
+    let invocation =
+          defaultInvocation
+            { cliArgs = ["--log-level", "debug", "version"],
+              cliEnv = Map.singleton "DUET_RPC_LOG" logPath
+            }
 
     result <- runCli invocation
     cliExitCode result @?= ExitSuccess
@@ -121,10 +123,11 @@ invalidLogPathFallback = do
   assertBool "Log fallback should not include stack trace" (not hasStackTrace)
   assertStructuredLogPrefix stderrText
   where
-    invocation = defaultInvocation
-      { cliArgs = ["--log-level", "debug", "version"]
-      , cliEnv = Map.singleton "DUET_RPC_LOG" "/nonexistent/x/y.log"
-      }
+    invocation =
+      defaultInvocation
+        { cliArgs = ["--log-level", "debug", "version"],
+          cliEnv = Map.singleton "DUET_RPC_LOG" "/nonexistent/x/y.log"
+        }
 
 assertVersionStdout :: CliResult -> Assertion
 assertVersionStdout result = cliStdout result @?= renderVersion <> "\n"
@@ -159,7 +162,7 @@ validateStructuredPrefix line = do
   (_, restAfterNamespace) <- bracketSegment restAfterTimestamp "namespace"
   (levelText, _restAfterLevel) <- bracketSegment restAfterNamespace "level"
   when (T.null levelText) $ Left "empty level name"
-  when (not (startsWithUpper levelText)) $ Left "level must start with uppercase"
+  unless (startsWithUpper levelText) $ Left "level must start with uppercase"
   Right ()
 
 parseTimestamp :: T.Text -> Either String ()

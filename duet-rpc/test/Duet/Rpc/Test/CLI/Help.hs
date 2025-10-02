@@ -1,25 +1,25 @@
 module Duet.Rpc.Test.CLI.Help
-  ( tests
-  ) where
-
-import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.HUnit (Assertion, testCase, (@?=))
+  ( tests,
+  )
+where
 
 import Duet.Rpc.Test.CLI.Harness
-  ( CliInvocation (..)
-  , CliResult (..)
-  , defaultInvocation
-  , runCli
+  ( CliInvocation (..),
+    CliResult (..),
+    defaultInvocation,
+    runCli,
   )
 import Duet.Rpc.Test.CLI.Helpers (assertTextContains)
+import Test.Tasty (TestTree, testGroup)
+import Test.Tasty.HUnit (Assertion, testCase, (@?=))
 
 tests :: TestTree
 tests =
   testGroup
     "help"
-    [ testCase "--help is available" helpFlagShowsSynopsis
-    , testCase "no args displays help" noArgsShowsHelp
-    , testCase "-h short flag matches --help" helpShortFlagMatches
+    [ testCase "--help is available" helpFlagShowsSynopsis,
+      testCase "no args displays help" noArgsShowsHelp,
+      testCase "-h short flag matches --help" helpShortFlagMatches
     ]
 
 helpFlagShowsSynopsis :: Assertion

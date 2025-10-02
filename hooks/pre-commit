@@ -1,0 +1,19 @@
+#!/bin/sh
+
+echo "Running ormolu formatting check on duet-rpc..."
+find duet-rpc/src duet-rpc/app duet-rpc/test -type f -name "*.hs" 2>/dev/null -exec ormolu --mode check {} +
+
+if [ $? -ne 0 ]; then
+    echo "ormolu found unformatted files. Please run 'ormolu --mode inplace \$(find duet-rpc -type f -name \"*.hs\")' to format them."
+    exit 1
+fi
+
+echo "Running hlint on duet-rpc..."
+hlint duet-rpc
+
+if [ $? -ne 0 ]; then
+    echo "hlint found issues. Please fix them before committing."
+    exit 1
+fi
+
+exit 0
