@@ -1,6 +1,14 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
   pull_request:
     types: [opened, synchronize, reopened]
     paths-ignore:
@@ -38,23 +46,23 @@ jobs:
           key: ${{ runner.os }}-ghc-9.12-cabal-${{ hashFiles('**/*.cabal', '**/cabal.project.freeze') }}
           restore-keys: |
             ${{ runner.os }}-ghc-9.12-cabal-
-            ${{ runner.os }}-ghc-cabal-
 
       - name: Validate cache restored
         if: steps.cabal-cache.outputs.cache-hit == 'true'
-        continue-on-error: false
         run: |
           if [ -f "$HOME/.cabal/store/.manifest-hash" ]; then
             CACHED_HASH=$(cat "$HOME/.cabal/store/.manifest-hash")
             CURRENT_HASH="${{ steps.dependency-hash.outputs.hash }}"
             if [ "$CACHED_HASH" != "$CURRENT_HASH" ]; then
               echo "Cache hash mismatch! Cached: $CACHED_HASH, Current: $CURRENT_HASH"
-              exit 1
+              echo "Purging stale cache and rebuilding..."
+              rm -rf "$HOME/.cabal/store"
+            else
+              echo "Cache validation passed"
             fi
-            echo "Cache validation passed"
           else
-            echo "No manifest found in cache, skipping validation"
-            exit 1
+            echo "No manifest found in cache, purging and rebuilding..."
+            rm -rf "$HOME/.cabal/store"
           fi
 
       - name: Install HLint
