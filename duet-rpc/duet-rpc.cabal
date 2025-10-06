@@ -21,6 +21,7 @@ common package-deps
                       filepath,
                       aeson,
                       bytestring,
+                      scientific,
                       stm,
                       unix,
                       async
@@ -33,6 +34,7 @@ library
     exposed-modules:  Duet.Rpc.CLI.Core
                       Duet.Rpc.CLI.Shell
                       Duet.Rpc.Config.Loader
+                      Duet.Rpc.JsonRpc.Types
                       Duet.Rpc.Logger
                       Duet.Rpc.OutputFormatter.Core
                       Duet.Rpc.OutputFormatter.Shell
@@ -44,6 +46,7 @@ library
                         OverloadedStrings
                         NamedFieldPuns
                         RecordWildCards
+                        DuplicateRecordFields
 
 executable duet-rpc
     import:           warnings, package-deps
@@ -55,6 +58,7 @@ executable duet-rpc
                         OverloadedStrings
                         NamedFieldPuns
                         RecordWildCards
+                        DuplicateRecordFields
 
 
 test-suite duet-rpc-test
@@ -91,3 +95,4 @@ test-suite duet-rpc-test
                         OverloadedStrings
                         NamedFieldPuns
                         RecordWildCards
+                        DuplicateRecordFields
