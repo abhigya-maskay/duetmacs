@@ -18,7 +18,12 @@ common package-deps
                       katip,
                       time,
                       directory,
-                      filepath
+                      filepath,
+                      aeson,
+                      bytestring,
+                      stm,
+                      unix,
+                      async
 
 common warnings
     ghc-options: -Wall
@@ -74,8 +79,7 @@ test-suite duet-rpc-test
                       Duet.Rpc.Test.Unit.VersionManager
                       Duet.Rpc.Test.Unit.ConfigLoader
                       Paths_duet_rpc
-    build-depends:    bytestring,
-                      duet-rpc,
+    build-depends:    duet-rpc,
                       tasty,
                       tasty-hunit,
                       tasty-golden,
